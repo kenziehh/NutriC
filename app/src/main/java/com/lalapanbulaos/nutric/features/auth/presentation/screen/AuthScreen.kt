@@ -48,6 +48,8 @@ import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
+import com.lalapanbulaos.nutric.presentation.component.NutriCButton
+import com.lalapanbulaos.nutric.presentation.component.NutriCTextField
 
 @Composable
 fun AuthScreen(viewModel: AuthViewModel = hiltViewModel()) {
@@ -225,85 +227,12 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun NutriCTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    textColor: Color = Color.Black,
-    placeholderColor: Color = Color.Black,
-    focusedLabelColor: Color = Colors.Primary.color40,
-    isPassword: Boolean = false
-) {
-    val isPasswordVisible = remember { mutableStateOf(false) }
-
-    // Determine the visual transformation (password or normal)
-    val visualTransformation = if (isPassword && !isPasswordVisible.value) {
-        PasswordVisualTransformation()
-    } else {
-        VisualTransformation.None
-    }
-
-    // The icon to show/hide the password
-    val eyeIcon =
-        if (isPasswordVisible.value) painterResource(id = R.drawable.ic_eyeoff) else painterResource(
-            id = R.drawable.ic_eye
-        )
-
-
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = { Text(placeholder, color = Colors.Neutral.color30) },
-        label = { Text(label) },
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = Colors.Neutral.color30, // Border color
-                shape = RoundedCornerShape(14.dp) // Rounded corners
-            ),
-        visualTransformation = visualTransformation, // Apply password transformation if required
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            textColor = textColor,
-            placeholderColor = placeholderColor,
-            focusedLabelColor = focusedLabelColor
-        ),
-        trailingIcon = {
-            // Eye icon to toggle password visibility
-            if (isPassword) {
-                IconButton(onClick = {
-                    // Toggle password visibility
-                    isPasswordVisible.value = !isPasswordVisible.value
-                }) {
-                    Icon(
-                        painter = eyeIcon, contentDescription = "Toggle password visibility",
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
-            }
-        }
-    )
-}
-
-@Composable
 fun AuthButton(isLoading: Boolean, onClick: () -> Unit, text: String = "Masuk") {
-    Button(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Colors.Primary.color40,
-            contentColor = Color.White,
-            disabledBackgroundColor = Colors.Primary.color30,
-            disabledContentColor = Color.White
-        ),
-        shape = RoundedCornerShape(14.dp),
-        contentPadding = PaddingValues(16.dp),
+    NutriCButton(
         enabled = !isLoading,
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         if (isLoading) {
             CircularProgressIndicator(

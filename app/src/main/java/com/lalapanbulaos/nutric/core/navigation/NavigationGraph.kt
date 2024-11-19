@@ -4,10 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lalapanbulaos.nutric.features.auth.presentation.screen.SignInScreen
+import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
 
 @Composable
-fun NavGraph(startDestination: String = "signin") {
+fun NavGraph(startDestination: String = "auth") {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = startDestination) {
@@ -18,8 +18,8 @@ fun NavGraph(startDestination: String = "signin") {
 //            }
 //        }
 //
-        composable("signin") {
-            SignInScreen()
+        composable("auth") {
+            AuthScreen()
         }
 //
 //        composable("signup") {

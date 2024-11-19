@@ -1,26 +1,33 @@
 package com.lalapanbulaos.nutric.core.di
 
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
+  // Define DataStore instance
+  private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
+
   @Provides
-  fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
-    return context.getSharedPreferences(UserPreferencesManager.PREFS_NAME, Context.MODE_PRIVATE)
+  @Singleton
+  fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> {
+    return context.dataStore
   }
 
   @Provides
-  fun provideUserPreferencesManager(sharedPreferences: SharedPreferences): UserPreferencesManager {
-    return UserPreferencesManager(sharedPreferences)
+  @Singleton
+  fun provideUserPreferencesManager(dataStore: DataStore<Preferences>): UserPreferencesManager {
+    return UserPreferencesManager(dataStore)
   }
 }

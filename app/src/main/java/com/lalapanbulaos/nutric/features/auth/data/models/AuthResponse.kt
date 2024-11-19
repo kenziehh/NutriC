@@ -1,7 +1,8 @@
 package com.lalapanbulaos.nutric.features.auth.data.models
 
-data class AuthResponse (
+import com.lalapanbulaos.nutric.core.models.User
+
+data class AuthResponse(
     val access_token: String,
-    val userId: String,
-    val username: String
+    val user: User
 )

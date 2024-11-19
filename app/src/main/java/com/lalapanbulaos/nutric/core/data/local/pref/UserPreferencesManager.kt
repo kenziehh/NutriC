@@ -1,51 +1,63 @@
 package com.lalapanbulaos.nutric.core.data.local.pref
 
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.lalapanbulaos.nutric.core.models.User
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserPreferencesManager @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val dataStore: DataStore<Preferences>
 ) {
 
     companion object {
-        const val PREFS_NAME = "user_preferences"
-        private const val KEY_ACCESS_TOKEN = "access_token"
+        private val KEY_USER_ID = stringPreferencesKey("user_id")
+        private val KEY_USERNAME = stringPreferencesKey("username")
+        private val KEY_ACCESS_TOKEN = stringPreferencesKey("access_token")
     }
 
-    fun saveUser(user: User) {
-        sharedPreferences.edit().apply {
-            putString("user_id", user.id)
-            putString("username", user.username)
-            apply()
+    suspend fun saveUser(user: User) {
+        dataStore.edit { preferences ->
+            preferences[KEY_USER_ID] = user.id
+            preferences[KEY_USERNAME] = user.username
         }
     }
 
-    fun getUser(): User? {
-        val userId = sharedPreferences.getString("user_id", null)
-        val username = sharedPreferences.getString("username", null)
-        return if (userId != null && username != null) {
+    val user: Flow<User?> = dataStore.data.map { preferences ->
+        val userId = preferences[KEY_USER_ID]
+        val username = preferences[KEY_USERNAME]
+        if (userId != null && username != null) {
             User(userId, username)
         } else {
             null
         }
     }
 
-    fun clearUser() {
-        sharedPreferences.edit().clear().apply()
+    suspend fun clearUser() {
+        dataStore.edit { preferences ->
+            preferences.remove(KEY_USER_ID)
+            preferences.remove(KEY_USERNAME)
+        }
     }
 
-    fun saveAccessToken(token: String) {
-        sharedPreferences.edit().putString(KEY_ACCESS_TOKEN, token).apply()
+    suspend fun saveAccessToken(token: String) {
+        dataStore.edit { preferences ->
+            preferences[KEY_ACCESS_TOKEN] = token
+        }
     }
 
-    fun getAccessToken(): String? {
-        return sharedPreferences.getString(KEY_ACCESS_TOKEN, null)
+    val accessToken: Flow<String?> = dataStore.data.map { preferences ->
+        preferences[KEY_ACCESS_TOKEN]
     }
 
-    fun clearAccessToken() {
-        sharedPreferences.edit().remove(KEY_ACCESS_TOKEN).apply()
+    suspend fun clearAccessToken() {
+        dataStore.edit { preferences ->
+            preferences.remove(KEY_ACCESS_TOKEN)
+        }
     }
 }

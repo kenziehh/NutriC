@@ -1,4 +1,4 @@
-package com.lalapanbulaos.nutric.features.auth.repository
+package com.lalapanbulaos.nutric.features.auth.data.repository
 
 import com.lalapanbulaos.nutric.features.auth.data.models.AuthResponse
 import com.lalapanbulaos.nutric.features.auth.data.models.SignInRequest

@@ -11,7 +11,7 @@ class UserPreferencesManager @Inject constructor(
 ) {
 
     companion object {
-        private const val PREFS_NAME = "user_preferences"
+        const val PREFS_NAME = "user_preferences"
         private const val KEY_ACCESS_TOKEN = "access_token"
     }
 

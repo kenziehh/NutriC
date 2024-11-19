@@ -1,5 +1,7 @@
-package com.lalapanbulaos.nutric.core.network
+package com.lalapanbulaos.nutric.core.di
 
+import com.lalapanbulaos.nutric.core.network.BaseUrl
+import com.lalapanbulaos.nutric.core.network.NetworkConstants
 import com.lalapanbulaos.nutric.features.auth.data.remote.AuthService
 import dagger.Module
 import dagger.Provides
@@ -9,7 +11,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -46,16 +47,11 @@ object NetworkModule {
     fun provideAuthService(retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
     }
+
+    @Provides
+    @BaseUrl
+    fun provideBaseUrl(): String {
+        return NetworkConstants.BASE_URL
+    }
 }
 
-//sealed class Result<out T> {
-//    data class Success<T>(val data: T) : Result<T>()
-//    data class Error(val exception: Exception) : Result<Nothing>()
-//    object Loading : Result<Nothing>()
-//
-//    companion object {
-//        fun <T> success(data: T) = Success(data)
-//        fun error(exception: Exception) = Error(exception)
-//        fun loading() = Loading
-//    }
-//}

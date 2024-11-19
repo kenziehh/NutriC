@@ -63,8 +63,8 @@ class SignInViewModel @Inject constructor(private val signInUseCase: SignInUseCa
 
     // State sealed class to represent different UI states
     sealed class SignInState {
-        object Idle : SignInState() // Initial state when no action has been taken
-        object Loading : SignInState() // State while loading
+        data object Idle : SignInState() // Initial state when no action has been taken
+        data object Loading : SignInState() // State while loading
         data class Success(val result: Boolean) : SignInState() // State when sign-in is successful
         data class Error(val errorMessage: String) : SignInState() // State when there is an error
     }

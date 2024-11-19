@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0" // this version matches your Kotlin version
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -59,8 +59,11 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+
     // Coroutines for asynchronous programming
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.compose.runtime.livedata)
 
     // Room DB
     implementation(libs.androidx.navigation.compose)
@@ -70,6 +73,7 @@ dependencies {
 
     // Dependency Injection
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)

@@ -12,6 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 object Colors {
     object Primary {
+        val color50 = Color(0xFF67934D)
         val color40 = Color(0xFF71A154)
         val color30 = Color(0xFF82B068)
         val color20 = Color(0xFFA1C38D)
@@ -20,6 +21,7 @@ object Colors {
     }
 
     object Secondary {
+        val color50 = Color(0xFFFE6920)
         val color40 = Color(0xFFFF8347)
         val color30 = Color(0xFFFF9866)
         val color20 = Color(0xFFFFB08A)
@@ -28,6 +30,7 @@ object Colors {
     }
 
     object Neutral {
+        val color50 = Color(0xFF0B0A0A)
         val color40 = Color(0xFF737373)
         val color30 = Color(0xFF848484)
         val color20 = Color(0xFFEDEDED)
@@ -36,6 +39,7 @@ object Colors {
     }
 
     object Success {
+        val color50 = Color(0xFF00A733)
         val color40 = Color(0xFF2AB955)
         val color30 = Color(0xFF53CA77)
         val color20 = Color(0xFF92E5AB)
@@ -44,6 +48,7 @@ object Colors {
     }
 
     object Warning {
+        val color50 = Color(0xFFFFBD00)
         val color40 = Color(0xFFFFCA33)
         val color30 = Color(0xFFFFD766)
         val color20 = Color(0xFFFFE599)
@@ -52,6 +57,7 @@ object Colors {
     }
 
     object Danger {
+        val color50 = Color(0xFFD00A09)
         val color40 = Color(0xFFF23837)
         val color30 = Color(0xFFF56767)
         val color20 = Color(0xFFFAAFAE)

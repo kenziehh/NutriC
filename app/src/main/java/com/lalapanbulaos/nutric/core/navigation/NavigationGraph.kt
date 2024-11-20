@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
+import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
 import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
 
 @Composable
@@ -15,17 +16,17 @@ fun NavGraph(startDestination: String = "auth") {
 
         composable("splash") {
             SplashScreen(onTimeout = {
-                navController.navigate("auth") {
+                navController.navigate("onboarding") {
                     popUpTo("splash") { inclusive = true }
                 }
             })
         }
 
-//        composable("onboarding") {
-//            OnboardingScreen {
-//                navController.navigate("signin")
-//            }
-//        }
+        composable("onboarding") {
+            OnboardingScreen {
+                navController.navigate("auth")
+            }
+        }
 //
         composable("auth") {
             AuthScreen()

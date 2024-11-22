@@ -13,32 +13,6 @@ import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
-
-//@Composable
-//fun NavGraph(
-//    navController: NavController,
-//    startDestination: String = "home"
-//) {
-//    NavHost(navController = navController, startDestination = startDestination) {
-//        composable("home") {
-//            HomeScreen()
-//        }
-//        composable("mealstats") {
-////            MealStatsScreen()
-//        }
-//        composable("scanfood") {
-////            ScanFoodScreen()
-//        }
-//        composable("articles") {
-////            ArticleScreen {
-////                navController.navigate("articleDetail/$it")
-////            }
-//        }
-//        composable("profile") {
-////            ProfileScreen()
-//        }
-//    }
-//}
 @Composable
 fun ScanFoodScreen(){
     Text("INI scan")
@@ -56,9 +30,6 @@ fun StatiSticScreen() {
 fun ProfileScreen() {
     Text("INI profil")
 }
-
-
-
 
 @Composable
 fun NavGraph(startDestination: String = "splash") {
@@ -83,6 +54,7 @@ fun NavGraph(startDestination: String = "splash") {
                 }
             }
         }
+        
         composable("home") {
             NutriCScaffold(navController = navController) {
                 HomeScreen()
@@ -110,52 +82,8 @@ fun NavGraph(startDestination: String = "splash") {
             }
         }
 
-
-
-//
-//        composable("signup") {
-//            SignUpScreen {
-//                navController.navigate("healthinfo_step1")
-//            }
-//        }
-//
-//        composable("healthinfo") {
-//            HealthInfo {
-//                navController.navigate("home")
-//            }
-//        }
-//
-//        composable("home") {
-////            HomeScreen(
-////                onScanFood = { navController.navigate("scanfood") },
-////                onArticle = { navController.navigate("articles") },
-////                onMealStats = { navController.navigate("mealstats") },
-////                onProfile = { navController.navigate("profile") },
-////                onCamera = { navController.navigate("camera") }
-////            )
-//        }
-//
-//        composable("scanfood") {
-//            ScanFoodScreen()
-//        }
-//
-//        composable("articles") {
-//            ArticleScreen {
-//                navController.navigate("articleDetail/$it")
-//            }
-//        }
-//
-//        composable("articleDetail/{articleId}") { backStackEntry ->
-//            val articleId = backStackEntry.arguments?.getString("articleId")?.toInt() ?: 0
-//            ArticleDetailScreen(articleId = articleId)
-//        }
-//
-//        composable("mealstats") {
-//            MealStatsScreen()
-//        }
-//
-//        composable("profile") {
-//            ProfileScreen()
-//        }
+        composable("healthinfo") {
+            HealthInfoScreen()
+        }
     }
 }

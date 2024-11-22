@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
 import com.lalapanbulaos.nutric.features.home.presentation.HomeScreen
+import com.lalapanbulaos.nutric.features.profile.presentation.ProfileScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
@@ -50,11 +51,6 @@ fun ArticleScreen(){
 fun StatiSticScreen() {
     Text("INI statistic")
 }
-@Composable
-fun ProfileScreen() {
-    Text("INI profil")
-}
-
 
 
 

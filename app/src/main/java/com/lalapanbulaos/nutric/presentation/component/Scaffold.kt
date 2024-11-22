@@ -1,6 +1,7 @@
 package com.lalapanbulaos.nutric.presentation.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +41,7 @@ fun NutriCScaffold(navController: NavController, children: @Composable () -> Uni
         modifier = Modifier.safeDrawingPadding(),
         bottomBar = { BottomNavbar(navController) }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 24.dp, end = 24.dp).safeDrawingPadding()) {
+        Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 24.dp, end = 24.dp).safeDrawingPadding().background(Colors.Background.white)) {
             children()
         }
     }

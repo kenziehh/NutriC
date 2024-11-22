@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
+import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthInfoScreen
 import com.lalapanbulaos.nutric.features.home.presentation.HomeScreen
 import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
 import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
@@ -48,13 +49,13 @@ fun NavGraph(startDestination: String = "splash") {
         composable("onboarding") {
             OnboardingScreen {
                 navController.navigate("auth")
-
-                composable("auth") {
-                    AuthScreen()
-                }
             }
         }
-        
+
+        composable("auth") {
+            AuthScreen(navController = navController)
+        }
+
         composable("home") {
             NutriCScaffold(navController = navController) {
                 HomeScreen()

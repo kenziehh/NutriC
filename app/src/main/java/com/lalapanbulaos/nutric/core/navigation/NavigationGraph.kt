@@ -7,39 +7,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
+import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthInfoScreen
 import com.lalapanbulaos.nutric.features.home.presentation.HomeScreen
-import com.lalapanbulaos.nutric.features.profile.presentation.ProfileScreen
 import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
 import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
-
-//@Composable
-//fun NavGraph(
-//    navController: NavController,
-//    startDestination: String = "home"
-//) {
-//    NavHost(navController = navController, startDestination = startDestination) {
-//        composable("home") {
-//            HomeScreen()
-//        }
-//        composable("mealstats") {
-////            MealStatsScreen()
-//        }
-//        composable("scanfood") {
-////            ScanFoodScreen()
-//        }
-//        composable("articles") {
-////            ArticleScreen {
-////                navController.navigate("articleDetail/$it")
-////            }
-//        }
-//        composable("profile") {
-////            ProfileScreen()
-//        }
-//    }
-//}
 @Composable
 fun ScanFoodScreen(){
     Text("INI scan")
@@ -53,8 +27,10 @@ fun ArticleScreen(){
 fun StatiSticScreen() {
     Text("INI statistic")
 }
-
-
+@Composable
+fun ProfileScreen() {
+    Text("INI profil")
+}
 
 @Composable
 fun NavGraph(startDestination: String = "splash") {
@@ -73,12 +49,13 @@ fun NavGraph(startDestination: String = "splash") {
         composable("onboarding") {
             OnboardingScreen {
                 navController.navigate("auth")
-
-                composable("auth") {
-                    AuthScreen()
-                }
             }
         }
+
+        composable("auth") {
+            AuthScreen(navController = navController)
+        }
+
         composable("home") {
             NutriCScaffold(navController = navController) {
                 HomeScreen()
@@ -106,52 +83,8 @@ fun NavGraph(startDestination: String = "splash") {
             }
         }
 
-
-
-//
-//        composable("signup") {
-//            SignUpScreen {
-//                navController.navigate("healthinfo_step1")
-//            }
-//        }
-//
-//        composable("healthinfo") {
-//            HealthInfo {
-//                navController.navigate("home")
-//            }
-//        }
-//
-//        composable("home") {
-////            HomeScreen(
-////                onScanFood = { navController.navigate("scanfood") },
-////                onArticle = { navController.navigate("articles") },
-////                onMealStats = { navController.navigate("mealstats") },
-////                onProfile = { navController.navigate("profile") },
-////                onCamera = { navController.navigate("camera") }
-////            )
-//        }
-//
-//        composable("scanfood") {
-//            ScanFoodScreen()
-//        }
-//
-//        composable("articles") {
-//            ArticleScreen {
-//                navController.navigate("articleDetail/$it")
-//            }
-//        }
-//
-//        composable("articleDetail/{articleId}") { backStackEntry ->
-//            val articleId = backStackEntry.arguments?.getString("articleId")?.toInt() ?: 0
-//            ArticleDetailScreen(articleId = articleId)
-//        }
-//
-//        composable("mealstats") {
-//            MealStatsScreen()
-//        }
-//
-//        composable("profile") {
-//            ProfileScreen()
-//        }
+        composable("healthinfo") {
+            HealthInfoScreen()
+        }
     }
 }

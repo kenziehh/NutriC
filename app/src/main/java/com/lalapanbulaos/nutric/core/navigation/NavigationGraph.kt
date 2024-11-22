@@ -9,6 +9,8 @@ import androidx.navigation.compose.rememberNavController
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
 import com.lalapanbulaos.nutric.features.home.presentation.HomeScreen
 import com.lalapanbulaos.nutric.features.profile.presentation.ProfileScreen
+import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
+import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
@@ -55,19 +57,27 @@ fun StatiSticScreen() {
 
 
 @Composable
-fun NavGraph(startDestination: String = "home") {
+fun NavGraph(startDestination: String = "splash") {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = startDestination) {
 
-//        composable("onboarding") {
-//            OnboardingScreen {
-//                navController.navigate("signin")
-//            }
-//        }
+        composable("splash") {
+            SplashScreen(onTimeout = {
+                navController.navigate("onboarding") {
+                    popUpTo("splash") { inclusive = true }
+                }
+            })
+        }
 
-        composable("auth") {
-            AuthScreen()
+        composable("onboarding") {
+            OnboardingScreen {
+                navController.navigate("auth")
+
+                composable("auth") {
+                    AuthScreen()
+                }
+            }
         }
         composable("home") {
             NutriCScaffold(navController = navController) {

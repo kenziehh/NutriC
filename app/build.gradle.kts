@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
+    implementation(libs.retrofit2.kotlin.coroutines.adapter)
+
 
     // Coroutines for asynchronous programming
     implementation(libs.kotlinx.coroutines.android)

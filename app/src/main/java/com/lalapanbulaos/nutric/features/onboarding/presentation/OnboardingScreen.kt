@@ -121,10 +121,9 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(64.dp))
             NutriCButton(
                 onClick = onGetStarted,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Lanjut", style = CustomTypography.labelMedium)
-            }
+                modifier = Modifier.fillMaxWidth(),
+                text = "Lanjut"
+            )
         }
     }
 }

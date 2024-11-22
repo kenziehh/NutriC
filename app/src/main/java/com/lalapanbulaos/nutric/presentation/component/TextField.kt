@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -31,7 +33,8 @@ fun NutriCTextField(
     textColor: Color = Color.Black,
     placeholderColor: Color = Color.Black,
     focusedLabelColor: Color = Colors.Primary.color40,
-    isPassword: Boolean = false
+    isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     val isPasswordVisible = remember { mutableStateOf(false) }
 
@@ -83,6 +86,7 @@ fun NutriCTextField(
                     )
                 }
             }
-        }
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType)
     )
 }

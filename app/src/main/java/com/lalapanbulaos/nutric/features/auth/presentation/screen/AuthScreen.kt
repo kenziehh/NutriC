@@ -2,7 +2,6 @@ package com.lalapanbulaos.nutric.features.auth.presentation.screen
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,22 +16,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,19 +33,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lalapanbulaos.nutric.presentation.theme.Colors
-import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
+import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
 import com.lalapanbulaos.nutric.presentation.component.NutriCButton
 import com.lalapanbulaos.nutric.presentation.component.NutriCTextField
+import com.lalapanbulaos.nutric.presentation.theme.Colors
+import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel = hiltViewModel()) {
+fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavController) {
     val inputState by viewModel.inputState.collectAsState()
     val authState by viewModel.authState.collectAsState()
     val isSignUpMode by viewModel.isSignUpMode.collectAsState()
@@ -231,18 +223,19 @@ fun AuthButton(isLoading: Boolean, onClick: () -> Unit, text: String = "Masuk") 
     NutriCButton(
         enabled = !isLoading,
         onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = Colors.Primary.color10
-            ) // Show spinner during loading
-        } else {
-            Text(text, style = CustomTypography.labelMedium)
+        modifier = Modifier.fillMaxWidth(),
+        content = {
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Colors.Primary.color10
+                )
+            } else {
+                Text(text, style = CustomTypography.labelMedium)
+            }
         }
-    }
+    )
 }
+
 
 

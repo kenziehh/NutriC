@@ -43,12 +43,6 @@ object NetworkModule {
     }
 
     @Provides
-    @Singleton
-    fun provideAuthService(retrofit: Retrofit): AuthService {
-        return retrofit.create(AuthService::class.java)
-    }
-
-    @Provides
     @BaseUrl
     fun provideBaseUrl(): String {
         return NetworkConstants.BASE_URL

@@ -18,8 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.lalapanbulaos.nutric.R
+import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
 import com.lalapanbulaos.nutric.features.home.presentation.component.NutrientProgressBar
 import com.lalapanbulaos.nutric.presentation.theme.Colors
@@ -73,6 +77,22 @@ fun HomeScreen(){
                         }
 
 
+
+                }
+                Spacer(Modifier.height(24.dp))
+
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Text("Aktivitas", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+                        Text("Lihat Semua", style = NutriCTypography.subHeadingXs, color = Colors.Secondary.color50)
+                }
+                Spacer(Modifier.height(16.dp))
+
+                Column {
+                        ActivityCard(currentCalories = 860, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Nasi Padang", imageResource = R.drawable.activity1)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ActivityCard(currentCalories = 400, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Lalapan Bu Laos", imageResource = R.drawable.activity2)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ActivityCard(currentCalories = 200, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Momogiiiiiiiiiii", imageResource = R.drawable.activity1)
                 }
 
 

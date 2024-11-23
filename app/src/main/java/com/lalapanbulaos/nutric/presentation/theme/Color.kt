@@ -71,4 +71,7 @@ object Colors {
     object Border{
         val white =   Color(0xFFFAFAFA)
     }
+    object Alomani{
+        val gray = Color(0xFF939393)
+    }
 }

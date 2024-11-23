@@ -51,11 +51,9 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
 
     val context = LocalContext.current
 
-    // Show toast if an error occurs
     if (authState is AuthViewModel.AuthState.Error) {
         val errorMessage = (authState as AuthViewModel.AuthState.Error).errorMessage
         LaunchedEffect(errorMessage) {
-            // Show the error message as a Toast
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
@@ -236,6 +234,3 @@ fun AuthButton(isLoading: Boolean, onClick: () -> Unit, text: String = "Masuk") 
         }
     )
 }
-
-
-

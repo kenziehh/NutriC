@@ -2,16 +2,27 @@ package com.lalapanbulaos.nutric.features.auth.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.features.auth.usecase.SignInUseCase
 import com.lalapanbulaos.nutric.features.auth.usecase.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor(private val signInUseCase: SignInUseCase, private val signUpUseCase: SignUpUseCase) : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val signInUseCase: SignInUseCase,
+    private val signUpUseCase: SignUpUseCase,
+    userPreferencesManager: UserPreferencesManager
+) : ViewModel() {
+
+    val accessToken: Flow<String?> = userPreferencesManager.accessToken
+
 
     // State for managing input fields (username and password)
     private val _inputState = MutableStateFlow(InputState())

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.Allergy
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.component.AllergyGrid
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetAllergiesUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.ValidateInputStepUseCase
 import com.lalapanbulaos.nutric.presentation.component.NutriCTextField
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HealthInfoViewModel @Inject constructor(
   getAllergiesUseCase: GetAllergiesUseCase,
+  getHealthInfoUseCase: GetHealthInfoUseCase,
   private val validateInputStepUseCase: ValidateInputStepUseCase
 ) :
   ViewModel() {
@@ -50,6 +52,8 @@ class HealthInfoViewModel @Inject constructor(
   val currentStep = mutableIntStateOf(0)
 
   val allergies = getAllergiesUseCase.execute()
+
+  val healthInfo = getHealthInfoUseCase.execute()
 
   private val currentStepId = stepList[currentStep.intValue].id
 

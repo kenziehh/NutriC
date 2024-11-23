@@ -9,6 +9,7 @@ import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthInfoScreen
 import com.lalapanbulaos.nutric.features.home.presentation.screen.HomeScreen
 import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
+import com.lalapanbulaos.nutric.features.profile.presentation.screen.ProfileScreen
 import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 
@@ -24,10 +25,6 @@ fun ArticleScreen(){
 @Composable
 fun StatiSticScreen() {
     Text("INI statistic")
-}
-@Composable
-fun ProfileScreen() {
-    Text("INI profil")
 }
 
 @Composable
@@ -71,7 +68,7 @@ fun NavGraph(startDestination: String = "splash") {
         }
         composable("profile") {
             NutriCScaffold(navController = navController) {
-                ProfileScreen()
+                ProfileScreen(navController=navController)
             }
         }
 

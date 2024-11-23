@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,20 +23,27 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
 import com.lalapanbulaos.nutric.features.home.presentation.component.NutrientProgressBar
+import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 @Composable
 fun HomeScreen(){
+        val viewModel: HomeViewModel = hiltViewModel()
+        val userNameState = viewModel.userName.collectAsState(initial = "Guest")
+        val userName = userNameState.value
+
+
         Column {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                         Column {
                                 Text("Selamat Datang!", style = NutriCTypography.bodySm, color = Colors.Alomani.gray)
-                                Text("Nama User", style = NutriCTypography.heading)
+                                Text(userName, style = NutriCTypography.heading)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
                                 Image(painter = painterResource(R.drawable.notif), contentDescription = "notification", modifier = Modifier.size(24.dp))

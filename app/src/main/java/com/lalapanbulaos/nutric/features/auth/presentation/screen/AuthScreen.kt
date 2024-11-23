@@ -51,11 +51,20 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
 
     val context = LocalContext.current
 
+    // Redirect to home if login is successful
+    if (authState is AuthViewModel.AuthState.Success) {
+        LaunchedEffect(Unit) {
+            Toast.makeText(context, "Berhasil Masuk", Toast.LENGTH_SHORT).show()
+            navController.navigate("home") {
+                popUpTo("auth") { inclusive = true } // Clear the backstack
+            }
+        }
+    }
+
     // Show toast if an error occurs
     if (authState is AuthViewModel.AuthState.Error) {
         val errorMessage = (authState as AuthViewModel.AuthState.Error).errorMessage
         LaunchedEffect(errorMessage) {
-            // Show the error message as a Toast
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
@@ -78,7 +87,6 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-
             Text(
                 if (isSignUpMode) "Daftar" else "Masuk",
                 style = CustomTypography.headlineLarge,
@@ -144,19 +152,18 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
             ) {
                 Divider(
                     modifier = Modifier
-                        .weight(1f) // Takes equal space in the row
-                        .padding(end = 16.dp), // Optional: add some padding to separate divider from "Atau"
+                        .weight(1f)
+                        .padding(end = 16.dp),
                     color = Colors.Neutral.color30,
                     thickness = 1.dp
                 )
 
                 Text("Atau", color = Colors.Neutral.color30)
 
-
                 Divider(
                     modifier = Modifier
-                        .weight(1f) // Takes equal space in the row
-                        .padding(start = 16.dp), // Optional: add some padding to separate divider from "Atau"
+                        .weight(1f)
+                        .padding(start = 16.dp),
                     color = Colors.Neutral.color30,
                     thickness = 1.dp
                 )
@@ -180,9 +187,8 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
                     modifier = Modifier
                         .size(30.dp)
                         .padding(end = 10.dp),
-                    tint = Color.Unspecified,
-
-                    )
+                    tint = Color.Unspecified
+                )
                 Text("Masuk dengan Google", style = CustomTypography.bodyLarge)
             }
         }
@@ -192,9 +198,7 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    bottom = 38.dp
-                ),
+                .padding(bottom = 38.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -217,6 +221,7 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
         }
     }
 }
+
 
 @Composable
 fun AuthButton(isLoading: Boolean, onClick: () -> Unit, text: String = "Masuk") {

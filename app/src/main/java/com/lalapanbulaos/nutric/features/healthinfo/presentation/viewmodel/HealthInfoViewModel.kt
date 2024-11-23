@@ -1,119 +1,204 @@
 package com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.Allergy
-import com.lalapanbulaos.nutric.features.healthinfo.presentation.component.AllergyGrid
+import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfo
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetAllergiesUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
-import com.lalapanbulaos.nutric.features.healthinfo.usecase.ValidateInputStepUseCase
-import com.lalapanbulaos.nutric.presentation.component.NutriCTextField
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoInputStep
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoStepManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HealthInfoViewModel @Inject constructor(
-  getAllergiesUseCase: GetAllergiesUseCase,
-  getHealthInfoUseCase: GetHealthInfoUseCase,
-  private val validateInputStepUseCase: ValidateInputStepUseCase
-) :
-  ViewModel() {
-  val stepList = listOf(
-    HealthInfoInputStep(
-      id = "age",
-      title = "Berapa umur kamu?",
-      description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
-    ),
-    HealthInfoInputStep(
-      id = "height",
-      title = "Berapa tinggi badan kamu?",
-      description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
-    ),
-    HealthInfoInputStep(
-      id = "weight",
-      title = "Berapa berat badan kamu?",
-      description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
-    ),
-    HealthInfoInputStep(
-      id = "allergies",
-      title = "Apakah kamu punya alergi?",
-      description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
-      notes = "Bisa memilih lebih dari 1",
-    )
-  )
+  private val getAllergiesUseCase: GetAllergiesUseCase,
+  private val getHealthInfoUseCase: GetHealthInfoUseCase,
+  private val stepManager: HealthInfoStepManager,
+) : ViewModel() {
 
-  val currentStep = mutableIntStateOf(0)
+  private val _uiState = MutableStateFlow(HealthInfoUiState())
+  val uiState: StateFlow<HealthInfoUiState> = _uiState.asStateFlow()
 
-  val allergies = getAllergiesUseCase.execute()
-
-  val healthInfo = getHealthInfoUseCase.execute()
-
-  private val currentStepId = stepList[currentStep.intValue].id
-
-  private val isAllowedNext: Boolean
-    get() = validateInputStepUseCase.isAllowedNext(
-      currentStepId,
-      inputState.value
-    )
-
-  private val _inputState = MutableStateFlow(InputState())
-  val inputState: StateFlow<InputState> = _inputState
-
-  fun onAgeChanged(age: String) {
-    _inputState.value = _inputState.value.copy(age = age)
+  init {
+    loadInitialData()
   }
 
-  fun onHeightChanged(height: String) {
-    _inputState.value = _inputState.value.copy(height = height)
+  private fun loadInitialData() {
+    viewModelScope.launch {
+      _uiState.update { it.copy(isLoading = true) }
 
-  }
-
-  fun onWeightChanged(weight: String) {
-    _inputState.value = _inputState.value.copy(weight = weight)
-
-  }
-
-  fun onAllergiesChanged(selectedAllergy: Allergy) {
-    val updatedAllergies = _inputState.value.allergies.toMutableList()
-
-    if (updatedAllergies.contains(selectedAllergy.name)) {
-      updatedAllergies.remove(selectedAllergy.name)
-    } else {
-      updatedAllergies.add(selectedAllergy.name)
-    }
-
-    _inputState.value = _inputState.value.copy(allergies = updatedAllergies)
-  }
-
-  fun goToNextStep() {
-    if (isAllowedNext && currentStep.intValue < stepList.size - 1) {
-      currentStep.intValue++
+      combine(
+        getAllergiesUseCase.execute(),
+        getHealthInfoUseCase.execute()
+      ) { allergies, healthInfo ->
+        _uiState.update { currentState ->
+          currentState.copy(
+            allergies = allergies,
+            healthInfo = healthInfo,
+            isLoading = false
+          )
+        }
+      }.catch { throwable ->
+        _uiState.update { currentState ->
+          currentState.copy(
+            error = HealthInfoError.AllergiesFetchError(throwable),
+            isLoading = false
+          )
+        }
+      }.collect {
+        Log.d("HealthInfoViewModel", "Initial data loaded successfully")
+      }
     }
   }
 
-  fun submit() {
-
-
+  fun onEvent(event: HealthInfoEvent) {
+    when (event) {
+      is HealthInfoEvent.OnAgeChanged -> updateAge(event.age)
+      is HealthInfoEvent.OnHeightChanged -> updateHeight(event.height)
+      is HealthInfoEvent.OnWeightChanged -> updateWeight(event.weight)
+      is HealthInfoEvent.OnAllergyToggled -> toggleAllergy(event.allergy)
+      HealthInfoEvent.OnNextStep -> goToNextStep()
+      HealthInfoEvent.OnPreviousStep -> goToPreviousStep()
+      HealthInfoEvent.OnSubmit -> submit()
+    }
   }
 
-  data class InputState(
-    val age: String = "",
-    val height: String = "",
-    val weight: String = "",
-    val allergies: List<String> = emptyList()
-  )
+  private fun updateAge(age: String) {
+    _uiState.update { currentState ->
+      val newInputState = currentState.inputState.copy(age = age)
+      currentState.copy(
+        inputState = newInputState,
+        isAllowedNext = stepManager.canMoveToNextStep(
+          currentState.currentStep,
+          newInputState
+        )
+      )
+    }
+  }
 
-  data class HealthInfoInputStep(
-    val id: String,
-    val title: String,
-    val description: String,
-    val notes: String? = null,
-  )
+  private fun updateHeight(height: String) {
+    _uiState.update { currentState ->
+      val newInputState = currentState.inputState.copy(height = height)
+      currentState.copy(
+        inputState = newInputState,
+        isAllowedNext = stepManager.canMoveToNextStep(
+          currentState.currentStep,
+          newInputState
+        )
+      )
+    }
+  }
+
+  private fun updateWeight(weight: String) {
+    _uiState.update { currentState ->
+      val newInputState = currentState.inputState.copy(weight = weight)
+      currentState.copy(
+        inputState = newInputState,
+        isAllowedNext = stepManager.canMoveToNextStep(
+          currentState.currentStep,
+          newInputState
+        )
+      )
+    }
+  }
+
+  private fun toggleAllergy(allergy: Allergy) {
+    _uiState.update { currentState ->
+      val currentAllergies = currentState.inputState.allergies.toMutableList()
+
+      if (currentAllergies.contains(allergy.name)) {
+        currentAllergies.remove(allergy.name)
+      } else {
+        currentAllergies.add(allergy.name)
+      }
+
+      val newInputState = currentState.inputState.copy(allergies = currentAllergies)
+      currentState.copy(
+        inputState = newInputState,
+        isAllowedNext = stepManager.canMoveToNextStep(
+          currentState.currentStep,
+          newInputState
+        )
+      )
+    }
+  }
+
+  private fun goToNextStep() {
+    _uiState.update { currentState ->
+      if (currentState.isAllowedNext && !stepManager.isLastStep(currentState.currentStep)) {
+        currentState.copy(
+          currentStep = currentState.currentStep + 1,
+          isAllowedNext = stepManager.canMoveToNextStep(
+            currentState.currentStep + 1,
+            currentState.inputState
+          )
+        )
+      } else currentState
+    }
+  }
+
+  private fun goToPreviousStep() {
+    _uiState.update { currentState ->
+      if (!stepManager.isFirstStep(currentState.currentStep)) {
+        currentState.copy(
+          currentStep = currentState.currentStep - 1,
+          isAllowedNext = stepManager.canMoveToNextStep(
+            currentState.currentStep - 1,
+            currentState.inputState
+          )
+        )
+      } else currentState
+    }
+  }
+
+  private fun submit() {
+    viewModelScope.launch {
+      // Implement submission logic here
+    }
+  }
+
+  val steps: List<HealthInfoInputStep> = stepManager.getSteps()
+}
+
+data class HealthInfoUiState(
+  val currentStep: Int = 0,
+  val inputState: InputState = InputState(),
+  val allergies: List<Allergy> = emptyList(),
+  val healthInfo: HealthInfo? = null,
+  val isLoading: Boolean = false,
+  val error: HealthInfoError? = null,
+  val isAllowedNext: Boolean = false
+)
+
+data class InputState(
+  val age: String = "",
+  val height: String = "",
+  val weight: String = "",
+  val allergies: List<String> = emptyList()
+)
+
+sealed class HealthInfoError {
+  data class AllergiesFetchError(val throwable: Throwable) : HealthInfoError()
+  data class HealthInfoFetchError(val throwable: Throwable) : HealthInfoError()
+}
+
+
+sealed class HealthInfoEvent {
+  data class OnAgeChanged(val age: String) : HealthInfoEvent()
+  data class OnHeightChanged(val height: String) : HealthInfoEvent()
+  data class OnWeightChanged(val weight: String) : HealthInfoEvent()
+  data class OnAllergyToggled(val allergy: Allergy) : HealthInfoEvent()
+  object OnNextStep : HealthInfoEvent()
+  object OnPreviousStep : HealthInfoEvent()
+  object OnSubmit : HealthInfoEvent()
 }

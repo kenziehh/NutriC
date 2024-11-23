@@ -18,11 +18,9 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val signUpUseCase: SignUpUseCase,
-    userPreferencesManager: UserPreferencesManager
+    private val userPreferencesManager: UserPreferencesManager
 ) : ViewModel() {
-
     val accessToken: Flow<String?> = userPreferencesManager.accessToken
-
 
     // State for managing input fields (username and password)
     private val _inputState = MutableStateFlow(InputState())
@@ -33,6 +31,12 @@ class AuthViewModel @Inject constructor(
 
     private val _isSignUpMode = MutableStateFlow(false)
     val isSignUpMode: StateFlow<Boolean> = _isSignUpMode
+
+    fun removeAccessToken() {
+        viewModelScope.launch {
+            userPreferencesManager.clearAccessToken()
+        }
+    }
 
     fun onUsernameChanged(username: String) {
         _inputState.value = _inputState.value.copy(username = username)

@@ -1,13 +1,16 @@
 package com.lalapanbulaos.nutric.core.navigation
 
 import android.provider.ContactsContract.Profile
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.lalapanbulaos.nutric.features.auth.presentation.component.AuthCheck
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
+import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthInfoScreen
 import com.lalapanbulaos.nutric.features.home.presentation.HomeScreen
 import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
@@ -29,8 +32,14 @@ fun StatiSticScreen() {
     Text("INI statistic")
 }
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(authViewModel: AuthViewModel = hiltViewModel()) {
     Text("INI profil")
+
+    Button(onClick = {
+        authViewModel.removeAccessToken()
+    }) {
+        Text("Logout")
+    }
 }
 
 @Composable

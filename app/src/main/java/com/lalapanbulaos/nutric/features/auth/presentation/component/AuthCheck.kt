@@ -12,12 +12,12 @@ import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.Healt
 @Composable
 fun AuthCheck(navController: NavController, authViewModel: AuthViewModel = hiltViewModel(), healthInfoViewModel: HealthInfoViewModel = hiltViewModel()) {
    val token = authViewModel.accessToken.collectAsState(initial = "").value
-    val healthInfo = healthInfoViewModel.healthInfo.collectAsState(initial = null).value
+
     Log.d("AuthCheck", "Token: $token")
 
     LaunchedEffect(token) {
         if (token == null) {
-            navController.navigate("login") {
+            navController.navigate("auth") {
                 popUpTo(0) // Clear navigation stack
             }
         } else {

@@ -33,10 +33,4 @@ class AllergyModule {
   fun provideGetAllergiesUseCase(allergyRepository: AllergyRepository): GetAllergiesUseCase {
     return GetAllergiesUseCase(allergyRepository)
   }
-
-  @Provides
-  @Singleton
-  fun provideHealthInfoViewModel(getAllergiesUseCase: GetAllergiesUseCase, getHealthInfoUseCase: GetHealthInfoUseCase, validateInputStepUseCase: ValidateInputStepUseCase): HealthInfoViewModel {
-    return HealthInfoViewModel(getAllergiesUseCase, getHealthInfoUseCase, validateInputStepUseCase)
-  }
 }

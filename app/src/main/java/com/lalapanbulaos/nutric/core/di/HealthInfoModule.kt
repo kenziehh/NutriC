@@ -3,6 +3,11 @@ package com.lalapanbulaos.nutric.core.di
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.features.healthinfo.data.remote.HealthInfoService
 import com.lalapanbulaos.nutric.features.healthinfo.data.repository.HealthInfoRepository
+import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoViewModel
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetAllergiesUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoStepManager
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.ValidateInputStepUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,4 +30,10 @@ class HealthInfoModule {
         return HealthInfoRepository(healthInfoService, userPreferencesManager)
     }
 
+
+    @Provides
+    @Singleton
+    fun provideHealthInfoViewModel(getAllergiesUseCase: GetAllergiesUseCase, getHealthInfoUseCase: GetHealthInfoUseCase, healthInfoStepManager: HealthInfoStepManager): HealthInfoViewModel {
+        return HealthInfoViewModel(getAllergiesUseCase, getHealthInfoUseCase, healthInfoStepManager)
+    }
 }

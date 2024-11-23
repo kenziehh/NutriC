@@ -2,7 +2,6 @@ package com.lalapanbulaos.nutric.core.di
 
 import com.lalapanbulaos.nutric.core.network.BaseUrl
 import com.lalapanbulaos.nutric.core.network.NetworkConstants
-import com.lalapanbulaos.nutric.features.auth.data.remote.AuthService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,4 +47,3 @@ object NetworkModule {
         return NetworkConstants.BASE_URL
     }
 }
-

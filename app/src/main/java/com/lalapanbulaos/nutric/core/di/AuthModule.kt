@@ -39,7 +39,7 @@ class AuthModule {
   }
 
   @Provides
-  fun provideAuthViewModel(signInUseCase: SignInUseCase, signUpUseCase: SignUpUseCase): AuthViewModel {
-    return AuthViewModel(signInUseCase, signUpUseCase)
+  fun provideAuthViewModel(signInUseCase: SignInUseCase, signUpUseCase: SignUpUseCase, userPreferencesManager: UserPreferencesManager): AuthViewModel {
+    return AuthViewModel(signInUseCase, signUpUseCase, userPreferencesManager)
   }
 }

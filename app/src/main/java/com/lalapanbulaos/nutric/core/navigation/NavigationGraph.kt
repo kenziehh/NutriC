@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lalapanbulaos.nutric.features.auth.presentation.component.AuthCheck
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthInfoScreen
 import com.lalapanbulaos.nutric.features.home.presentation.HomeScreen
@@ -35,6 +36,8 @@ fun ProfileScreen() {
 @Composable
 fun NavGraph(startDestination: String = "splash") {
     val navController = rememberNavController()
+
+    AuthCheck(navController)
 
     NavHost(navController = navController, startDestination = startDestination) {
 

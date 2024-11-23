@@ -3,6 +3,7 @@ package com.lalapanbulaos.nutric.presentation.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,14 +27,16 @@ import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 @Composable
-fun SettingItem(setting: Setting) {
+fun SettingItem(setting: Setting
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp).background(Colors.Neutral.color00)
-            .border(color = Colors.Border.white, width = 1.dp),
+            .border(color = Colors.Border.white, width = 1.dp)
+            .clickable { setting.onClick?.invoke() },
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
 
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {

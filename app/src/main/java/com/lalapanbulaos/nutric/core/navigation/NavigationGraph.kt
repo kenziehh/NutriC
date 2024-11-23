@@ -68,7 +68,7 @@ fun NavGraph(startDestination: String = "splash") {
         }
         composable("profile") {
             NutriCScaffold(navController = navController) {
-                ProfileScreen()
+                ProfileScreen(navController=navController)
             }
         }
 

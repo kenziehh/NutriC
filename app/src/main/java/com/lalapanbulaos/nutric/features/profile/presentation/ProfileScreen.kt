@@ -68,7 +68,7 @@ fun ProfileScreen(){
         Spacer(modifier = Modifier.height(24.dp))
         Text("Seputar Aplikasi", style = NutriCTypography.subHeadingMd)
         Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
+        LazyColumn(modifier = Modifier.height(250.dp)) {
             items(menuItems) { menuItem ->
                 SettingItem(setting = menuItem)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -77,7 +77,7 @@ fun ProfileScreen(){
         Spacer(modifier = Modifier.height(16.dp))
         Text("Pengaturan", style = NutriCTypography.subHeadingMd)
         Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
+        LazyColumn(modifier = Modifier.height(120.dp)) {
             items(settingItems) { settingItem ->
                 SettingItem(setting = settingItem)
                 Spacer(modifier = Modifier.height(8.dp))

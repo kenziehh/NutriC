@@ -64,6 +64,7 @@ class AuthViewModel @Inject constructor(private val signInUseCase: SignInUseCase
             result.onSuccess {
                 _authState.value = AuthState.Success
                 _inputState.value = InputState() // Reset input state
+
             }.onFailure { exception ->
                 _authState.value = AuthState.Error(exception.message ?: "Unknown error")
             }

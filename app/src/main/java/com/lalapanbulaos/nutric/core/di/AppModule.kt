@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
+import com.lalapanbulaos.nutric.core.network.interceptor.AuthInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,5 +30,11 @@ class AppModule {
   @Singleton
   fun provideUserPreferencesManager(dataStore: DataStore<Preferences>): UserPreferencesManager {
     return UserPreferencesManager(dataStore)
+  }
+
+  @Provides
+  @Singleton
+  fun provideAuthInterceptor(userPreferencesManager: UserPreferencesManager): AuthInterceptor {
+    return AuthInterceptor(userPreferencesManager)
   }
 }

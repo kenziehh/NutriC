@@ -1,6 +1,7 @@
 package com.lalapanbulaos.nutric.features.healthinfo.presentation.component
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.input.KeyboardType
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoEvent
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoUiState
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoInputStep
@@ -16,17 +17,20 @@ fun HealthInfoInputStepContent(
         "age" -> NutriCTextField(
             value = state.inputState.age,
             label = "Age",
-            onValueChange = { onEvent(HealthInfoEvent.OnAgeChanged(it)) }
+            onValueChange = { onEvent(HealthInfoEvent.OnAgeChanged(it)) },
+            keyboardType = KeyboardType.Number
         )
         "height" -> NutriCTextField(
             value = state.inputState.height,
             label = "Height",
-            onValueChange = { onEvent(HealthInfoEvent.OnHeightChanged(it)) }
+            onValueChange = { onEvent(HealthInfoEvent.OnHeightChanged(it)) },
+            keyboardType = KeyboardType.Number
         )
         "weight" -> NutriCTextField(
             value = state.inputState.weight,
             label = "Weight",
-            onValueChange = { onEvent(HealthInfoEvent.OnWeightChanged(it)) }
+            onValueChange = { onEvent(HealthInfoEvent.OnWeightChanged(it)) },
+            keyboardType = KeyboardType.Number
         )
         "allergies" -> AllergyGrid(
             allergies = state.allergies,

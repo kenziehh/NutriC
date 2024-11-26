@@ -12,11 +12,7 @@ import javax.inject.Inject
 class GetAllergiesUseCase @Inject constructor(
   private val allergyRepository: AllergyRepository
 ) {
-  fun execute(): Flow<List<Allergy>> {
+  suspend fun execute(): Result<List<Allergy>> {
     return allergyRepository.getAllergies()
-      .catch { exception ->
-        throw exception
-      }
-      .flowOn(Dispatchers.IO)
   }
 }

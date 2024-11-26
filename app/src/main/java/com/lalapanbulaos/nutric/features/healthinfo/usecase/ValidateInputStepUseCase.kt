@@ -10,7 +10,7 @@ class ValidateInputStepUseCase @Inject constructor() {
       "age" -> inputState.age.isNotEmpty()
       "height" -> inputState.height.isNotEmpty()
       "weight" -> inputState.weight.isNotEmpty()
-      "allergies" -> inputState.allergies.isNotEmpty()
+      "allergies" -> true
       else -> false
     }
   }

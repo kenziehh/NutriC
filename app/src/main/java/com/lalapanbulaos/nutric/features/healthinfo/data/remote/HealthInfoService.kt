@@ -16,9 +16,9 @@ interface HealthInfoService {
     @Header("Authorization") token: String
   ): Response<ApiResponse<HealthInfo>>
 
-//  @POST("health-info")
-//  suspend fun createHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
-//
+  @POST("health-info")
+  suspend fun createHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
+
 //  @PUT("health-info")
 //  suspend fun updateHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
 }

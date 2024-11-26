@@ -1,16 +1,18 @@
 package com.lalapanbulaos.nutric.features.healthinfo.presentation.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lalapanbulaos.nutric.features.healthinfo.presentation.component.AllergyGrid
+import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.component.HealthInfoInputStepContent
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoEvent
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoUiState
@@ -18,21 +20,27 @@ import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.Healt
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoInputStep
 import com.lalapanbulaos.nutric.presentation.component.NutriCButton
 import com.lalapanbulaos.nutric.presentation.component.NutriCOutlinedButton
-import com.lalapanbulaos.nutric.presentation.component.NutriCTextField
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 
 @Composable
 fun HealthInfoScreen(
-  viewModel: HealthInfoViewModel = hiltViewModel()
+  onHealthInfoAvailable: () -> Unit,
+  viewModel: HealthInfoViewModel = hiltViewModel(),
 ) {
   val uiState = viewModel.uiState.collectAsState().value
   val steps = viewModel.steps
 
+  LaunchedEffect(uiState.healthInfo) {
+    if (uiState.healthInfo != null) {
+      onHealthInfoAvailable()
+    }
+  }
+
   HealthInfoContent(
     state = uiState,
     steps = steps,
-    onEvent = viewModel::onEvent
+    onEvent = viewModel::onEvent,
   )
 }
 
@@ -40,7 +48,7 @@ fun HealthInfoScreen(
 private fun HealthInfoContent(
   state: HealthInfoUiState,
   steps: List<HealthInfoInputStep>,
-  onEvent: (HealthInfoEvent) -> Unit
+  onEvent: (HealthInfoEvent) -> Unit,
 ) {
   Column(
     modifier = Modifier

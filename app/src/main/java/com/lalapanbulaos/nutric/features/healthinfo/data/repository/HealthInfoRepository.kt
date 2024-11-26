@@ -14,39 +14,35 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class HealthInfoRepository @Inject constructor(
-  private val healthInfoService: HealthInfoService,
-  private val userPreferencesManager: UserPreferencesManager
-) {
-  fun getHealthInfo(): Flow<HealthInfo> = flow {
-    try {
-      val accessToken = userPreferencesManager.accessToken.first()
-      val authToken = "Bearer $accessToken"
+  class HealthInfoRepository @Inject constructor(
+    private val healthInfoService: HealthInfoService
+  ) {
+    suspend fun getHealthInfo(token: String): Result<HealthInfo> {
+      return try {
+          val response = healthInfoService.getHealthInfo(token)
 
-      Log.d("HealthInfoRepository", "Token: $authToken")
+          Result.success(
+            response.body()?.data ?: throw Exception("Response body is null")
+          )
+      } catch (e: Exception) {
+        Result.failure(e)
+      }
+    }
 
-      val response = healthInfoService.getHealthInfo(token = authToken)
+    suspend fun createHealthInfo(healthInfoRequest: HealthInfoRequest, token: String): Result<HealthInfo> {
+      return try {
+          val response = healthInfoService.createHealthInfo(healthInfoRequest, token)
 
-      Log.d("HealthInfoRepository", "Response: $response")
-    } catch (e: Exception) {
-      throw Exception("Failed to fetch health info: ${e.message}", e)
+          if (response.isSuccessful) {
+            Result.success(
+              response.body()?.data ?: throw Exception("Response body is null")
+            )
+          } else {
+            Result.failure(Throwable(response.body()?.message ?: "Unknown error"))
+          }
+      } catch (e: Exception) {
+        Result.failure(e)
+      }
     }
   }
 
-//  suspend fun createHealthInfo(healthInfoRequest: HealthInfoRequest): Result<HealthInfo> {
-//    return try {
-//      val accessToken = userPreferencesManager.accessToken
-//      val response = healthInfoService.createHealthInfo(healthInfoRequest, "Bearer $accessToken")
-//
-//      if (response.isSuccessful) {
-//        response.body()?.data?.let { healthInfo ->
-//          Result.success(healthInfo)
-//        } ?: Result.failure(Exception("Response body is null"))
-//      } else {
-//        Result.failure(Exception("API call failed with code: ${response.code()}"))
-//      }
-//    } catch (e: Exception) {
-//      Result.failure(Exception("An error occurred: ${e.message}", e))
-//    }
-//  }
-}

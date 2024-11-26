@@ -4,6 +4,7 @@ import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.features.healthinfo.data.remote.HealthInfoService
 import com.lalapanbulaos.nutric.features.healthinfo.data.repository.HealthInfoRepository
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoViewModel
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.CreateHealthInfoUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetAllergiesUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoStepManager
@@ -26,14 +27,19 @@ class HealthInfoModule {
 
     @Provides
     @Singleton
-    fun provideHealthInfoRepository(healthInfoService: HealthInfoService, userPreferencesManager: UserPreferencesManager): HealthInfoRepository {
-        return HealthInfoRepository(healthInfoService, userPreferencesManager)
+    fun provideHealthInfoRepository(healthInfoService: HealthInfoService): HealthInfoRepository {
+        return HealthInfoRepository(healthInfoService)
     }
-
 
     @Provides
     @Singleton
-    fun provideHealthInfoViewModel(getAllergiesUseCase: GetAllergiesUseCase, getHealthInfoUseCase: GetHealthInfoUseCase, healthInfoStepManager: HealthInfoStepManager): HealthInfoViewModel {
-        return HealthInfoViewModel(getAllergiesUseCase, getHealthInfoUseCase, healthInfoStepManager)
+    fun provideGetHealthInfoUseCase(healthInfoRepository: HealthInfoRepository, userPreferencesManager: UserPreferencesManager): GetHealthInfoUseCase {
+        return GetHealthInfoUseCase(healthInfoRepository, userPreferencesManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCreateHealthInfoUseCase(userPreferencesManager: UserPreferencesManager, healthInfoRepository: HealthInfoRepository): CreateHealthInfoUseCase {
+        return CreateHealthInfoUseCase(healthInfoRepository, userPreferencesManager)
     }
 }

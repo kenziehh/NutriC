@@ -6,9 +6,11 @@ import com.lalapanbulaos.nutric.features.auth.data.repository.AuthRepository
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
 import com.lalapanbulaos.nutric.features.auth.usecase.SignInUseCase
 import com.lalapanbulaos.nutric.features.auth.usecase.SignUpUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import javax.inject.Singleton
@@ -36,10 +38,5 @@ class AuthModule {
   @Provides
   fun provideSignUpUseCase(authRepository: AuthRepository, userPreferencesManager: UserPreferencesManager): SignUpUseCase {
     return SignUpUseCase(authRepository, userPreferencesManager)
-  }
-
-  @Provides
-  fun provideAuthViewModel(signInUseCase: SignInUseCase, signUpUseCase: SignUpUseCase, userPreferencesManager: UserPreferencesManager): AuthViewModel {
-    return AuthViewModel(signInUseCase, signUpUseCase, userPreferencesManager)
   }
 }

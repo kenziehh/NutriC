@@ -35,8 +35,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
+import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthMode
+import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthState
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
 import com.lalapanbulaos.nutric.presentation.component.NutriCButton
 import com.lalapanbulaos.nutric.presentation.component.NutriCTextField
@@ -44,19 +45,16 @@ import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 
 @Composable
-fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavController) {
+fun AuthScreen(
+    viewModel: AuthViewModel = hiltViewModel(),
+    onLoginSuccess: () -> Unit,
+    onRequiresHealthInfo: () -> Unit
+) {
     val inputState by viewModel.inputState.collectAsState()
-    val authState by viewModel.authState.collectAsState()
-    val isSignUpMode by viewModel.isSignUpMode.collectAsState()
+    val authState = viewModel.authState.collectAsState().value
+    val isSignUpMode = viewModel.authMode.collectAsState().value == AuthMode.SIGN_UP
 
     val context = LocalContext.current
-
-    if (authState is AuthViewModel.AuthState.Error) {
-        val errorMessage = (authState as AuthViewModel.AuthState.Error).errorMessage
-        LaunchedEffect(errorMessage) {
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -98,7 +96,7 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
 
             NutriCTextField(
                 value = inputState.username,
-                onValueChange = { viewModel.onUsernameChanged(it) },
+                onValueChange = { viewModel.updateUsername(it) },
                 label = "Username",
                 placeholder = "Masukkan username",
                 modifier = Modifier
@@ -108,7 +106,7 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
 
             NutriCTextField(
                 value = inputState.password,
-                onValueChange = { viewModel.onPasswordChanged(it) },
+                onValueChange = { viewModel.updatePassword(it) },
                 label = "Password",
                 placeholder = "Masukkan password",
                 modifier = Modifier,
@@ -119,7 +117,7 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
                 Spacer(modifier = Modifier.height(8.dp))
                 NutriCTextField(
                     value = inputState.confirmPassword,
-                    onValueChange = { viewModel.onConfirmPasswordChanged(it) },
+                    onValueChange = { viewModel.updateConfirmPassword(it) },
                     label = "Confirm Password",
                     placeholder = "Masukkan konfirmasi password",
                     modifier = Modifier,
@@ -130,8 +128,8 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
             Spacer(modifier = Modifier.height(36.dp))
 
             AuthButton(
-                isLoading = authState is AuthViewModel.AuthState.Loading,
-                onClick = { viewModel.submit() },
+                isLoading = authState is AuthState.Loading,
+                onClick = { viewModel.authenticate() },
                 text = if (isSignUpMode) "Daftar" else "Masuk"
             )
 
@@ -206,12 +204,27 @@ fun AuthScreen(viewModel: AuthViewModel = hiltViewModel(), navController: NavCon
             Text(
                 if (isSignUpMode) "Masuk" else "Daftar",
                 modifier = Modifier.clickable(onClick = {
-                    viewModel.toggleSignUpMode(!isSignUpMode)
+                    viewModel.switchAuthMode()
                 }),
                 color = Colors.Primary.color40,
                 style = CustomTypography.bodyMedium,
                 fontWeight = FontWeight.Medium
             )
+        }
+
+        LaunchedEffect(authState) {
+            if (authState is AuthState.Authenticated) {
+                onLoginSuccess()
+            } else if (authState is AuthState.RequiresHealthInfo) {
+                onRequiresHealthInfo()
+            }
+        }
+
+        when (authState) {
+            is AuthState.Error -> {
+                Toast.makeText(context, authState.errorMessage, Toast.LENGTH_SHORT).show()
+            }
+            else -> {}
         }
     }
 }
@@ -225,7 +238,7 @@ fun AuthButton(isLoading: Boolean, onClick: () -> Unit, text: String = "Masuk") 
         content = {
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(22.dp),
                     color = Colors.Primary.color10
                 )
             } else {

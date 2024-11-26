@@ -1,103 +1,163 @@
 package com.lalapanbulaos.nutric.features.auth.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.features.auth.usecase.SignInUseCase
 import com.lalapanbulaos.nutric.features.auth.usecase.SignUpUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfo
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val signUpUseCase: SignUpUseCase,
-    private val userPreferencesManager: UserPreferencesManager
+    private val userPreferencesManager: UserPreferencesManager,
+    private val getHealthInfoUseCase: GetHealthInfoUseCase
 ) : ViewModel() {
-    val accessToken: Flow<String?> = userPreferencesManager.accessToken
+    // Separate state for input validation and UI
+    private val _inputState = MutableStateFlow(AuthInputState())
+    val inputState: StateFlow<AuthInputState> = _inputState.asStateFlow()
 
-    // State for managing input fields (username and password)
-    private val _inputState = MutableStateFlow(InputState())
-    val inputState: StateFlow<InputState> = _inputState
+    // Separate state for authentication mode
+    private val _authMode = MutableStateFlow(AuthMode.SIGN_IN)
+    val authMode: StateFlow<AuthMode> = _authMode.asStateFlow()
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
-    val authState: StateFlow<AuthState> = _authState
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
+    val authState: StateFlow<AuthState> = _authState.asStateFlow()
 
-    private val _isSignUpMode = MutableStateFlow(false)
-    val isSignUpMode: StateFlow<Boolean> = _isSignUpMode
+    private val _healthInfo = MutableStateFlow<HealthInfo?>(null)
+    val healthInfo: StateFlow<HealthInfo?> = _healthInfo.asStateFlow()
 
-    fun removeAccessToken() {
+    init {
+        checkAuthState()
+    }
+
+    private fun checkAuthState() {
         viewModelScope.launch {
-            userPreferencesManager.clearAccessToken()
+            val token = userPreferencesManager.accessToken.first()
+
+            if (token != null) {
+                Log.d("AuthViewModel", "Token found: $token")
+                loadHealthInfo()
+                if (_healthInfo.value == null) {
+                    _authState.value = AuthState.RequiresHealthInfo
+                } else {
+                    _authState.value = AuthState.Authenticated
+                }
+            } else {
+                _authState.value = AuthState.Unauthenticated
+            }
         }
     }
 
-    fun onUsernameChanged(username: String) {
-        _inputState.value = _inputState.value.copy(username = username)
-    }
-
-    fun onPasswordChanged(password: String) {
-        _inputState.value = _inputState.value.copy(password = password)
-    }
-
-    fun onConfirmPasswordChanged(confirmPassword: String) {
-        _inputState.value = _inputState.value.copy(confirmPassword = confirmPassword)
-    }
-
-    fun toggleSignUpMode(isSignUp: Boolean) {
-        _isSignUpMode.value = isSignUp
-    }
-
-    // Handle submit
-    fun submit() {
-        if (_inputState.value.username.isEmpty() || _inputState.value.password.isEmpty()) {
-            _authState.value = AuthState.Error("Username and password must not be empty")
-            return
+    private suspend fun loadHealthInfo() {
+        getHealthInfoUseCase.execute().onSuccess {
+            _healthInfo.value = it
+        }.onFailure {
+            Log.e("AuthViewModel", "Error loading health info", it)
         }
 
-        if (_isSignUpMode.value && _inputState.value.password != _inputState.value.confirmPassword) {
-            _authState.value = AuthState.Error("Passwords do not match")
+    }
+
+    fun updateUsername(username: String) {
+        _inputState.update { it.copy(username = username) }
+    }
+
+    fun updatePassword(password: String) {
+        _inputState.update { it.copy(password = password) }
+    }
+
+    fun updateConfirmPassword(confirmPassword: String) {
+        _inputState.update { it.copy(confirmPassword = confirmPassword) }
+    }
+
+    fun switchAuthMode() {
+        val mode = if (_authMode.value == AuthMode.SIGN_IN) {
+            AuthMode.SIGN_UP
+        } else {
+            AuthMode.SIGN_IN
+        }
+        _authMode.value = mode
+        _inputState.value = AuthInputState()
+    }
+
+    fun authenticate() {
+        val validationError = validateInput()
+        if (validationError != null) {
+            _authState.value = AuthState.Error(validationError)
             return
         }
 
         _authState.value = AuthState.Loading
 
         viewModelScope.launch {
-            val result = if (_isSignUpMode.value) {
-                signUpUseCase.execute(_inputState.value.username, _inputState.value.password)
-            } else {
-                signInUseCase.execute(_inputState.value.username, _inputState.value.password)
+            val result = when (_authMode.value) {
+                AuthMode.SIGN_UP -> signUpUseCase.execute(
+                    _inputState.value.username,
+                    _inputState.value.password
+                )
+
+                AuthMode.SIGN_IN -> signInUseCase.execute(
+                    _inputState.value.username,
+                    _inputState.value.password
+                )
             }
 
-            // Handle success or failure based on the result
             result.onSuccess {
-                _authState.value = AuthState.Success
-                _inputState.value = InputState() // Reset input state
-
-            }.onFailure { exception ->
-                _authState.value = AuthState.Error(exception.message ?: "Unknown error")
+                checkAuthState()
+            }.onFailure {
+                _authState.value = AuthState.Error(it.message ?: "Unknown error")
             }
         }
     }
 
-    // State for managing input fields
-    data class InputState(
-        val username: String = "",
-        val password: String = "",
-        val confirmPassword: String = ""
-    )
-
-    // State sealed class to represent different UI states
-    sealed class AuthState {
-        object Idle : AuthState() // Initial state when no action has been taken
-        object Loading : AuthState() // State while loading
-        object Success : AuthState() // State when sign-in or sign-up is successful
-        data class Error(val errorMessage: String) : AuthState() // State when there is an error
+    suspend fun logout() {
+        userPreferencesManager.clearUser()
+        userPreferencesManager.clearAccessToken()
+        _authState.value = AuthState.Unauthenticated
+        Log.d("AuthViewModel", "Logout successful")
     }
+
+    private fun validateInput(): String? {
+        val currentState = _inputState.value
+        return when {
+            currentState.username.isEmpty() -> "Username cannot be empty"
+            currentState.password.isEmpty() -> "Password cannot be empty"
+            _authMode.value == AuthMode.SIGN_UP &&
+                    currentState.password != currentState.confirmPassword ->
+                "Passwords do not match"
+
+            else -> null
+        }
+    }
+}
+
+data class AuthInputState(
+    val username: String = "",
+    val password: String = "",
+    val confirmPassword: String = ""
+)
+
+enum class AuthMode {
+    SIGN_IN,
+    SIGN_UP
+}
+
+sealed class AuthState {
+    object Loading : AuthState()
+    object Unauthenticated : AuthState()
+    object Authenticated : AuthState()
+    object RequiresHealthInfo : AuthState()
+    data class Error(val errorMessage: String) : AuthState()
 }

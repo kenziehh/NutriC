@@ -21,7 +21,9 @@ class SignInUseCase @Inject constructor(
         val signInRequest = SignInRequest(username, password)
 
         return try {
-            // Attempt to sign in
+            userPreferencesManager.clearAccessToken()
+            userPreferencesManager.clearUser()
+
             val result = authRepository.signIn(signInRequest)
 
             Log.d("SignInUseCase", "Sign-in result: $result")
@@ -34,21 +36,9 @@ class SignInUseCase @Inject constructor(
             // Create user object
             val user = User(response.user.id, response.user.username)
 
-            // Save user data and access token in preferences
             userPreferencesManager.saveUser(user)
             userPreferencesManager.saveAccessToken(response.access_token)
 
-//            CoroutineScope(Dispatchers.IO).launch {
-//                userPreferencesManager.accessToken
-//                    .combine(userPreferencesManager.user) { token, userData ->
-//                        "Access token: $token, User data: $userData"
-//                    }
-//                    .collect { combinedData ->
-//                        Log.d("SignInUseCase", combinedData)
-//                    }
-//            }
-
-            // Return success
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e("SignInUseCase", "Error during sign-in: ${e.message}", e)

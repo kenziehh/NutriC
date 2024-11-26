@@ -1,11 +1,16 @@
 package com.lalapanbulaos.nutric.core.data.local.pref
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.lalapanbulaos.nutric.core.models.User
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -36,7 +41,7 @@ class UserPreferencesManager @Inject constructor(
         } else {
             null
         }
-    }
+    }.distinctUntilChanged()
 
     suspend fun clearUser() {
         dataStore.edit { preferences ->
@@ -49,15 +54,31 @@ class UserPreferencesManager @Inject constructor(
         dataStore.edit { preferences ->
             preferences[KEY_ACCESS_TOKEN] = token
         }
+        Log.d("UserPreferencesManager", "Access token saved: $token")
     }
 
-    val accessToken: Flow<String?> = dataStore.data.map { preferences ->
-        preferences[KEY_ACCESS_TOKEN]
-    }
+    val accessToken: Flow<String?> = dataStore.data
+        .catch { exception ->
+            // Handle any errors reading data
+            Log.e("UserPreferencesManager", "Error reading preferences", exception)
+            emit(emptyPreferences())
+        }
+        .map { preferences ->
+            preferences[KEY_ACCESS_TOKEN]
+        }.distinctUntilChanged()
 
     suspend fun clearAccessToken() {
         dataStore.edit { preferences ->
             preferences.remove(KEY_ACCESS_TOKEN)
+        }
+    }
+
+    suspend fun getBearerToken(): String? {
+        val token = accessToken.first()
+        if (token != null) {
+            return "Bearer $token"
+        } else {
+            return null
         }
     }
 }

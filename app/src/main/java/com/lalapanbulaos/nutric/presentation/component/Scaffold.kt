@@ -1,6 +1,7 @@
 package com.lalapanbulaos.nutric.presentation.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButton
@@ -40,7 +43,10 @@ fun NutriCScaffold(navController: NavController, children: @Composable () -> Uni
         modifier = Modifier.safeDrawingPadding(),
         bottomBar = { BottomNavbar(navController) }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 24.dp, end = 24.dp).safeDrawingPadding()) {
+        Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 24.dp, end = 24.dp).safeDrawingPadding().background(Colors.Background.white).verticalScroll(
+            rememberScrollState()
+        )
+        ) {
             children()
         }
     }

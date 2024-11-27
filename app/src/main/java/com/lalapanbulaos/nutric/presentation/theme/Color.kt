@@ -17,6 +17,7 @@ object Colors {
         val color30 = Color(0xFF82B068)
         val color20 = Color(0xFFA1C38D)
         val color10 = Color(0xFFE3EDDE)
+        val color05 = Color(0xFFF1FAFE)
         val color00 = Color(0xFFF1F6EE)
     }
 
@@ -63,5 +64,14 @@ object Colors {
         val color20 = Color(0xFFFAAFAE)
         val color10 = Color(0xFFFDDEDE)
         val color00 = Color(0xFFFFF6F6)
+    }
+    object Background{
+        val white   = Color(0xFFF8F8F8)
+    }
+    object Border{
+        val white =   Color(0xFFFAFAFA)
+    }
+    object Alomani{
+        val gray = Color(0xFF939393)
     }
 }

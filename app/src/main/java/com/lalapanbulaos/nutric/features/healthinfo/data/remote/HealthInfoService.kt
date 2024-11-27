@@ -12,13 +12,13 @@ import retrofit2.http.PUT
 
 interface HealthInfoService {
   @GET("health-info")
-  fun getHealthInfo(
+  suspend fun getHealthInfo(
     @Header("Authorization") token: String
   ): Response<ApiResponse<HealthInfo>>
 
   @POST("health-info")
   suspend fun createHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
 
-  @PUT("health-info")
-  suspend fun updateHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
+//  @PUT("health-info")
+//  suspend fun updateHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
 }

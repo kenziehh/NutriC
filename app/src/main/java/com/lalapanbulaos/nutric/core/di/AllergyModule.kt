@@ -4,6 +4,7 @@ import com.lalapanbulaos.nutric.features.healthinfo.data.remote.AllergyService
 import com.lalapanbulaos.nutric.features.healthinfo.data.repository.AllergyRepository
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoViewModel
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetAllergiesUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.ValidateInputStepUseCase
 import dagger.Module
 import dagger.Provides
@@ -32,11 +33,4 @@ class AllergyModule {
   fun provideGetAllergiesUseCase(allergyRepository: AllergyRepository): GetAllergiesUseCase {
     return GetAllergiesUseCase(allergyRepository)
   }
-
-  @Provides
-  @Singleton
-  fun provideHealthInfoViewModel(getAllergiesUseCase: GetAllergiesUseCase, validateInputStepUseCase: ValidateInputStepUseCase): HealthInfoViewModel {
-    return HealthInfoViewModel(getAllergiesUseCase, validateInputStepUseCase)
-  }
-
 }

@@ -28,7 +28,7 @@ fun NutriCTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
-    placeholder: String,
+    placeholder: String = "",
     modifier: Modifier = Modifier,
     textColor: Color = Color.Black,
     placeholderColor: Color = Color.Black,

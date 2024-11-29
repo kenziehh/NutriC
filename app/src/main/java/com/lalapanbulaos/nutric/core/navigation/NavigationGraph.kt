@@ -35,18 +35,18 @@ fun ArticleScreen() {
 fun StatiSticScreen() {
     Text("INI statistic")
 }
-
-@Composable
-fun ProfileScreen(authViewModel: AuthViewModel = hiltViewModel(), onLogout: () -> Unit) {
-    Button(onClick = {
-        runBlocking {
-            authViewModel.logout()
-        }
-        onLogout()
-    }) {
-        Text("Logout")
-    }
-}
+//
+//@Composable
+//fun ProfileScreen(authViewModel: AuthViewModel = hiltViewModel(), onLogout: () -> Unit) {
+//    Button(onClick = {
+//        runBlocking {
+//            authViewModel.logout()
+//        }
+//        onLogout()
+//    }) {
+//        Text("Logout")
+//    }
+//}
 
 @Composable
 fun NavGraph(
@@ -106,6 +106,7 @@ fun NavGraph(
         composable(AppRoutes.Profile.route) {
             NutriCScaffold(navController = navController) {
                 ProfileScreen(
+                    navController=navController,
                     onLogout = {
                         navController.navigate(AppRoutes.Auth.route) {
                             popUpTo(AppRoutes.Profile.route) { inclusive = true }

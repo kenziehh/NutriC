@@ -1,10 +1,7 @@
 package com.lalapanbulaos.nutric.features.healthinfo.data.repository
 
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.Allergy
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfo
+import com.lalapanbulaos.nutric.core.models.Allergy
 import com.lalapanbulaos.nutric.features.healthinfo.data.remote.AllergyService
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class AllergyRepository @Inject constructor(private val allergyService: AllergyService) {

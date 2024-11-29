@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.Allergy
+import com.lalapanbulaos.nutric.core.models.Allergy
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 
 @Composable

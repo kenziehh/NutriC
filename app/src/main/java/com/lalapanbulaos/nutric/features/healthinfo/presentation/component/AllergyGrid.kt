@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.Allergy
+import com.lalapanbulaos.nutric.core.models.Allergy
 
 @Composable
 fun AllergyGrid(

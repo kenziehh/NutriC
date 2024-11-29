@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
+import com.lalapanbulaos.nutric.core.models.HealthInfo
 import com.lalapanbulaos.nutric.features.auth.usecase.SignInUseCase
 import com.lalapanbulaos.nutric.features.auth.usecase.SignUpUseCase
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfo
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

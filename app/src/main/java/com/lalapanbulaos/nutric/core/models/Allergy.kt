@@ -1,4 +1,4 @@
-package com.lalapanbulaos.nutric.features.healthinfo.data.model
+package com.lalapanbulaos.nutric.core.models
 
 data class Allergy(
   val name: String,

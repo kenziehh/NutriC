@@ -17,9 +17,9 @@ import javax.inject.Inject
   class HealthInfoRepository @Inject constructor(
     private val healthInfoService: HealthInfoService
   ) {
-    suspend fun getHealthInfo(token: String): Result<HealthInfo> {
+    suspend fun getHealthInfo(): Result<HealthInfo> {
       return try {
-          val response = healthInfoService.getHealthInfo(token)
+          val response = healthInfoService.getHealthInfo()
 
           Result.success(
             response.body()?.data ?: throw Exception("Response body is null")
@@ -29,9 +29,9 @@ import javax.inject.Inject
       }
     }
 
-    suspend fun createHealthInfo(healthInfoRequest: HealthInfoRequest, token: String): Result<HealthInfo> {
+    suspend fun createHealthInfo(healthInfoRequest: HealthInfoRequest): Result<HealthInfo> {
       return try {
-          val response = healthInfoService.createHealthInfo(healthInfoRequest, token)
+          val response = healthInfoService.createHealthInfo(healthInfoRequest)
 
           if (response.isSuccessful) {
             Result.success(

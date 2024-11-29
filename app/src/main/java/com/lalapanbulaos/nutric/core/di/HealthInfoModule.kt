@@ -33,13 +33,13 @@ class HealthInfoModule {
 
     @Provides
     @Singleton
-    fun provideGetHealthInfoUseCase(healthInfoRepository: HealthInfoRepository, userPreferencesManager: UserPreferencesManager): GetHealthInfoUseCase {
-        return GetHealthInfoUseCase(healthInfoRepository, userPreferencesManager)
+    fun provideGetHealthInfoUseCase(healthInfoRepository: HealthInfoRepository): GetHealthInfoUseCase {
+        return GetHealthInfoUseCase(healthInfoRepository)
     }
 
     @Provides
     @Singleton
-    fun provideCreateHealthInfoUseCase(userPreferencesManager: UserPreferencesManager, healthInfoRepository: HealthInfoRepository): CreateHealthInfoUseCase {
-        return CreateHealthInfoUseCase(healthInfoRepository, userPreferencesManager)
+    fun provideCreateHealthInfoUseCase(healthInfoRepository: HealthInfoRepository): CreateHealthInfoUseCase {
+        return CreateHealthInfoUseCase(healthInfoRepository)
     }
 }

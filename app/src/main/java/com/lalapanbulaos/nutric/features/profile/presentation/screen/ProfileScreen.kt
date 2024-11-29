@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
+import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
 import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
 import com.lalapanbulaos.nutric.features.profile.data.Setting
 import com.lalapanbulaos.nutric.features.profile.data.SettingType
@@ -30,13 +32,12 @@ import com.lalapanbulaos.nutric.features.profile.presentation.viewmodel.ProfileV
 import com.lalapanbulaos.nutric.presentation.component.SettingItem
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
-
-
-
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.runBlocking
 
 
 @Composable
-fun ProfileScreen(navController: NavController){
+fun ProfileScreen(navController: NavController,onLogout:()->Unit,authViewModel: AuthViewModel = hiltViewModel()){
     val viewModel: ProfileViewModel = hiltViewModel()
     val userNameState = viewModel.userName.collectAsState(initial = "Guest")
     val userName = userNameState.value
@@ -50,11 +51,11 @@ fun ProfileScreen(navController: NavController){
     val settingItems = listOf(
         Setting("Hapus Akun", R.drawable.delete,SettingType.DANGER),
         Setting("Keluar", R.drawable.logout,SettingType.SUCCESS,
-            { viewModel.signOut()
-                Toast.makeText(context, "Berhasil Keluar", Toast.LENGTH_SHORT).show()
-                navController.navigate("auth") {
-                    popUpTo("profile") { inclusive = true }
+            {
+                runBlocking {
+                    authViewModel.logout()
                 }
+                onLogout()
             })
     )
 
@@ -101,7 +102,14 @@ fun ProfileScreen(navController: NavController){
             }
         }
 
-
+//        Button(onClick = {
+//            runBlocking {
+//                authViewModel.logout()
+//            }
+//            onLogout()
+//        }) {
+//            Text("Logout")
+//        }
 
     }
 }

@@ -10,12 +10,8 @@ import javax.inject.Inject
 
 class CreateHealthInfoUseCase @Inject constructor(
     private val healthInfoRepository: HealthInfoRepository,
-    private val userPreferencesManager: UserPreferencesManager
 ) {
     suspend fun execute(createHealthInfoRequest: HealthInfoRequest): Result<HealthInfo> {
-        val token = userPreferencesManager.getBearerToken()
-            ?: return Result.failure(Exception("Token is empty"))
-
-        return healthInfoRepository.createHealthInfo(createHealthInfoRequest, token)
+        return healthInfoRepository.createHealthInfo(createHealthInfoRequest)
     }
 }

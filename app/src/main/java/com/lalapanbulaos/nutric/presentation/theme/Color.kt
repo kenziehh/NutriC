@@ -31,7 +31,7 @@ object Colors {
     }
 
     object Neutral {
-        val color50 = Color(0xFF0B0A0A)
+        val color50 = Color(0xFF7B8389)
         val color40 = Color(0xFF737373)
         val color30 = Color(0xFF848484)
         val color20 = Color(0xFFEDEDED)

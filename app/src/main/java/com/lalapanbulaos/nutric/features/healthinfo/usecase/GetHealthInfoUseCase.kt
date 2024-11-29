@@ -2,7 +2,8 @@ package com.lalapanbulaos.nutric.features.healthinfo.usecase
 
 import android.util.Log
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
-import com.lalapanbulaos.nutric.core.models.HealthInfo
+//import com.lalapanbulaos.nutric.core.models.Resource
+import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfo
 import com.lalapanbulaos.nutric.features.healthinfo.data.repository.HealthInfoRepository
 import javax.inject.Inject
 

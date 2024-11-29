@@ -27,7 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
-import com.lalapanbulaos.nutric.features.home.presentation.component.NutrientProgressBar
+import com.lalapanbulaos.nutric.presentation.component.NutrientProgressBar
 import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography

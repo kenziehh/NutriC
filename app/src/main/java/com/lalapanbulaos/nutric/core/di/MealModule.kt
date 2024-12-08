@@ -4,6 +4,7 @@ package com.lalapanbulaos.nutric.core.di
 import com.lalapanbulaos.nutric.features.meal.data.remote.MealService
 import com.lalapanbulaos.nutric.features.meal.data.repository.MealRepository
 import com.lalapanbulaos.nutric.features.meal.usecase.GetMealUseCase
+import com.lalapanbulaos.nutric.features.meal.usecase.GetTotalMacroNutrientUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +32,11 @@ class MealModule {
     fun provideGetMealUseCase(mealRepository: MealRepository): GetMealUseCase {
         return GetMealUseCase(mealRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideGetMacronutrientUseCase(mealRepository: MealRepository): GetTotalMacroNutrientUseCase {
+        return GetTotalMacroNutrientUseCase(mealRepository)
+    }
+
 }

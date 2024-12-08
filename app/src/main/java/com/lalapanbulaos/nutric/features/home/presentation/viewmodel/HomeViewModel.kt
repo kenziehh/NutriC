@@ -3,8 +3,10 @@ package com.lalapanbulaos.nutric.features.home.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
 import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.features.meal.usecase.GetMealUseCase
+import com.lalapanbulaos.nutric.features.meal.usecase.GetTotalMacroNutrientUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getMealUseCase: GetMealUseCase
+    private val getMealUseCase: GetMealUseCase,
+    private val getTotalMacroNutrientUseCase: GetTotalMacroNutrientUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -35,9 +38,7 @@ class HomeViewModel @Inject constructor(
             Log.d("HomeViewModel", "Raw response: ${response}")
 
             response.onSuccess { meals ->
-                // Log the successful response
                 Log.d("HomeViewModel", "Meals fetched successfully: $meals")
-
                 _uiState.update { currentState ->
                     currentState.copy(
                         meals = meals,
@@ -45,10 +46,11 @@ class HomeViewModel @Inject constructor(
                         error = null
                     )
                 }
-            }.onFailure { throwable ->
-                // Log the failure response
-                Log.e("HomeViewModel", "Error fetching meals: ", throwable)
 
+                // Fetch total macro nutrients after meals are fetched
+                fetchTotalMacros(meals)
+            }.onFailure { throwable ->
+                Log.e("HomeViewModel", "Error fetching meals: ", throwable)
                 _uiState.update { currentState ->
                     currentState.copy(
                         error = MealError.MealFetchError(throwable),
@@ -57,13 +59,26 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
+    private fun fetchTotalMacros(meals: List<MealResponse>) {
+        viewModelScope.launch {
+            val result = getTotalMacroNutrientUseCase.execute(meals)
+            result.onSuccess { totalMacros ->
+                Log.d("HomeViewModel", "Total macros calculated: $totalMacros")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        totalMacros = totalMacros
+                    )
+                }
+            }.onFailure { throwable ->
+                Log.e("HomeViewModel", "Error calculating total macros: ", throwable)
+            }
+        }
+    }
 
     private fun fetchUserName() {
         // Implement user name fetching logic here
-        // For now, we'll just set a dummy name
         _userName.value = "John Doe"
     }
 }
@@ -71,7 +86,8 @@ class HomeViewModel @Inject constructor(
 data class HomeUiState(
     val meals: List<MealResponse> = emptyList(),
     val isLoading: Boolean = false,
-    val error: MealError? = null
+    val error: MealError? = null,
+    val totalMacros: FoodMacroNutrient? = null // Added to store total macronutrients
 )
 
 sealed class MealError {

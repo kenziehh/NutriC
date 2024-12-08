@@ -62,6 +62,10 @@ fun HomeScreen(
                 }
                 Spacer(Modifier.height(32.dp))
                 Column {
+                        val totalCalories = uiState.totalMacros?.calories ?: 0
+                        val totalCarbs = uiState.totalMacros?.carbohydrates ?: 0
+                        val totalProteins = uiState.totalMacros?.protein ?: 0
+                        val totalFats = uiState.totalMacros?.fat ?: 0
                         Row(Modifier.fillMaxWidth().height(200.dp).background(color = Colors.Primary.color10, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))){
                                 Column(
                                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -69,7 +73,7 @@ fun HomeScreen(
                                         verticalArrangement = Arrangement.Center
                                 ){
                                         Spacer(modifier = Modifier.height(42.dp))
-                                        HalfCircularProgressBar(totalCalories = 1840, calorieNeeds = 2500)
+                                        HalfCircularProgressBar(totalCalories = totalCalories.toInt(), calorieNeeds = 2500)
                                         Spacer(modifier = Modifier.height(42.dp))
                                 }
                         }
@@ -79,15 +83,15 @@ fun HomeScreen(
                         ) {
                                 Row(modifier = Modifier.padding(vertical = 16.dp, horizontal = 12.dp)) {
                                         Column(modifier = Modifier.weight(1f)) {
-                                                NutrientProgressBar("Karbohidrat", 40, 145,R.drawable.karbohidrat)
+                                                NutrientProgressBar("Karbohidrat", totalCarbs.toInt(), 145,R.drawable.karbohidrat)
                                         }
                                         Spacer(modifier = Modifier.width(16.dp))
                                         Column(modifier = Modifier.weight(1f)) {
-                                                NutrientProgressBar("Protein", 195, 190,R.drawable.protein)
+                                                NutrientProgressBar("Protein", totalProteins.toInt(), 190,R.drawable.protein)
                                         }
                                         Spacer(modifier = Modifier.width(16.dp))
                                         Column(modifier = Modifier.weight(1f)) {
-                                                NutrientProgressBar("Lemak", 0, 90,R.drawable.lemak)
+                                                NutrientProgressBar("Lemak", totalFats.toInt(), 90,R.drawable.lemak)
                                         }
                                 }
 
@@ -120,7 +124,7 @@ fun HomeScreen(
                                 Text("Something went wrong. please try again later")
                         }
                         else -> {
-                                LazyColumn(modifier = Modifier.fillMaxWidth().height(1000.dp)) {
+                                LazyColumn(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                                         if (uiState.meals.isEmpty()) {
                                                 item {
                                                         Text(

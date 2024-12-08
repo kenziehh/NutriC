@@ -73,5 +73,6 @@ object Colors {
     }
     object Alomani{
         val gray = Color(0xFF939393)
+        val green = Color(0xFFE3EDDE)
     }
 }

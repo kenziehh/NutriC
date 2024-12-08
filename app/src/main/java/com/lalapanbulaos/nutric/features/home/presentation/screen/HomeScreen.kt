@@ -12,32 +12,41 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
-import com.lalapanbulaos.nutric.presentation.component.NutrientProgressBar
 import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
+import com.lalapanbulaos.nutric.presentation.component.NutrientProgressBar
+import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 @Composable
-fun HomeScreen(){
-        val viewModel: HomeViewModel = hiltViewModel()
-        val userNameState = viewModel.userName.collectAsState(initial = "Guest")
-        val userName = userNameState.value
-
+fun HomeScreen(
+        viewModel: HomeViewModel = hiltViewModel()
+) {
+        val uiState by viewModel.uiState.collectAsState()
+        val userName by viewModel.userName.collectAsState()
 
         Column {
                 Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
@@ -83,9 +92,6 @@ fun HomeScreen(){
                                 }
 
                         }
-
-
-
                 }
                 Spacer(Modifier.height(24.dp))
 
@@ -95,18 +101,84 @@ fun HomeScreen(){
                 }
                 Spacer(Modifier.height(16.dp))
 
-                Column {
-                        ActivityCard(currentCalories = 860, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Nasi Padang", imageResource = R.drawable.activity1)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ActivityCard(currentCalories = 400, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Lalapan Bu Laos", imageResource = R.drawable.activity2)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ActivityCard(currentCalories = 200, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Momogiiiiiiiiiii", imageResource = R.drawable.activity1)
+//                Column {
+//                        ActivityCard(currentCalories = 860, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Nasi Padang", imageResource = R.drawable.activity1)
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        ActivityCard(currentCalories = 400, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Lalapan Bu Laos", imageResource = R.drawable.activity2)
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        ActivityCard(currentCalories = 200, targetCalories = 2000, date = "Senin, 23 oktober 2024", foodName = "Momogiiiiiiiiiii", imageResource = R.drawable.activity1)
+//                }
+
+                when {
+                        uiState.isLoading -> {
+                                CircularProgressIndicator(
+                                        modifier = Modifier.fillMaxWidth()
+                                                .wrapContentSize(Alignment.Center)
+                                )
+                        }
+                        uiState.error != null -> {
+                                Text("Something went wrong. please try again later")
+                        }
+                        else -> {
+                                LazyColumn(modifier = Modifier.fillMaxWidth().height(1000.dp)) {
+                                        if (uiState.meals.isEmpty()) {
+                                                item {
+                                                        Text(
+                                                                text = "Belum ada aktivitas hari ini",
+                                                                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
+                                                                color = Colors.Neutral.color40,
+                                                                modifier = Modifier
+                                                                        .fillMaxWidth()
+                                                                        .padding(16.dp),
+                                                                textAlign = TextAlign.Center
+                                                        )
+                                                }
+                                        } else {
+                                                items(uiState.meals) { meal ->
+                                                        meal.food.foodMacroNutrient?.calories?.let { ActivityCard(currentCalories = it.toInt(), date = "Today", foodName = meal.food.name, imageResource = R.drawable.activity1, targetCalories = 2400) }
+                                                        Spacer(modifier = Modifier.height(8.dp))
+                                                }
+                                        }
+                                }
+
+                        }
                 }
-
-
-
         }
 }
 
 
-
+//@Composable
+//fun MealItem(meal: MealResponse) {
+//        Card(
+//                modifier = Modifier.fillMaxWidth(),
+//                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+//        ) {
+//                Column(
+//                        modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(16.dp)
+//                ) {
+//                        Text(
+//                                text = "Meal ID: ${meal.id}",
+//                                fontWeight = FontWeight.Bold
+//                        )
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        Text(
+//                                text = "Serving: ${meal.serving_size} ${meal.serving_unit}",
+//                        )
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        Text(
+//                                text = "Created at: ${meal.created_at}",
+//                        )
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        Text(
+//                                text = "Foods:",
+//                                fontWeight = FontWeight.Bold
+//                        )
+//                                Text(
+//                                        text = "- ${meal.food.name}",
+//                                )
+//
+//                }
+//        }
+//}

@@ -3,6 +3,7 @@ package com.lalapanbulaos.nutric.features.home.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
 import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.features.meal.usecase.GetMealUseCase
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getMealUseCase: GetMealUseCase,
-    private val getTotalMacroNutrientUseCase: GetTotalMacroNutrientUseCase
+    private val getTotalMacroNutrientUseCase: GetTotalMacroNutrientUseCase,
+    private val userPreferencesManager: UserPreferencesManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -28,7 +30,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         fetchMeals()
-        fetchUserName() // Assume this method exists to fetch the user's name
+        fetchUserName()
     }
 
     fun fetchMeals() {
@@ -78,8 +80,11 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun fetchUserName() {
-        // Implement user name fetching logic here
-        _userName.value = "John Doe"
+        viewModelScope.launch {
+            userPreferencesManager.user.collect { user ->
+                _userName.value = user?.username ?: "Guest"
+            }
+        }
     }
 }
 

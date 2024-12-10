@@ -2,7 +2,6 @@ package com.lalapanbulaos.nutric.core.models
 
 import com.google.gson.annotations.SerializedName
 
-import com.google.gson.annotations.SerializedName
 
 data class Food(
     val id: String,

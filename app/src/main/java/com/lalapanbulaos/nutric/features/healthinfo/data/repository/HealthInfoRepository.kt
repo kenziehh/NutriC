@@ -5,7 +5,6 @@ import androidx.compose.runtime.collectAsState
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.core.models.DailyTarget
 import com.lalapanbulaos.nutric.core.models.HealthInfo
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.DailyTarget
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfoRequest
 import com.lalapanbulaos.nutric.features.healthinfo.data.remote.HealthInfoService
 import kotlinx.coroutines.flow.Flow

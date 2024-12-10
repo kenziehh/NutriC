@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
+import com.lalapanbulaos.nutric.core.models.DailyTarget
 import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
-import com.lalapanbulaos.nutric.features.healthinfo.data.model.DailyTarget
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetDailyTargetUseCase
 import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.features.meal.usecase.GetMealUseCase

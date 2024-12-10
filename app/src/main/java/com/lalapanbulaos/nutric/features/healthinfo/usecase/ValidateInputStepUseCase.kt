@@ -7,9 +7,11 @@ import javax.inject.Inject
 class ValidateInputStepUseCase @Inject constructor() {
   fun isAllowedNext(currentStepId: String, inputState: InputState): Boolean {
     return when (currentStepId) {
+      "gender" -> inputState.gender.isNotEmpty()
       "age" -> inputState.age.isNotEmpty()
       "height" -> inputState.height.isNotEmpty()
       "weight" -> inputState.weight.isNotEmpty()
+      "activity_level" -> true
       "allergies" -> true
       else -> false
     }

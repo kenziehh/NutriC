@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.core.models.DailyTarget
 import com.lalapanbulaos.nutric.core.models.HealthInfo
+import com.lalapanbulaos.nutric.features.healthinfo.data.model.DailyTarget
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfoRequest
 import com.lalapanbulaos.nutric.features.healthinfo.data.remote.HealthInfoService
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +31,18 @@ import javax.inject.Inject
       }
     }
 
+      suspend fun getDailyTarget(): Result<DailyTarget> {
+          return try {
+              val response = healthInfoService.getDailyTarget()
+
+              Result.success(
+                  response.body()?.data ?: throw Exception("Response body is null")
+              )
+          } catch (e: Exception) {
+              Result.failure(e)
+          }
+      }
+
     suspend fun createHealthInfo(healthInfoRequest: HealthInfoRequest): Result<HealthInfo> {
       return try {
           val response = healthInfoService.createHealthInfo(healthInfoRequest)
@@ -46,16 +59,5 @@ import javax.inject.Inject
       }
     }
 
-    suspend fun getDailyTarget(): Result<DailyTarget> {
-        return try {
-            val response = healthInfoService.getDailyTarget()
-
-            Result.success(
-                response.body()?.data ?: throw Exception("Response body is null")
-            )
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
   }
 

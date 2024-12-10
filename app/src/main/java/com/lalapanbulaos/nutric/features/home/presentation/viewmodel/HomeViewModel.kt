@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
+import com.lalapanbulaos.nutric.features.healthinfo.data.model.DailyTarget
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetDailyTargetUseCase
 import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.features.meal.usecase.GetMealUseCase
 import com.lalapanbulaos.nutric.features.meal.usecase.GetTotalMacroNutrientUseCase
@@ -20,6 +22,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getMealUseCase: GetMealUseCase,
     private val getTotalMacroNutrientUseCase: GetTotalMacroNutrientUseCase,
+    private val getDailyTargetUseCase: GetDailyTargetUseCase,
     private val userPreferencesManager: UserPreferencesManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -31,6 +34,7 @@ class HomeViewModel @Inject constructor(
     init {
         fetchMeals()
         fetchUserName()
+        fetchDailyTarget()
     }
 
     fun fetchMeals() {
@@ -86,13 +90,29 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+    private fun fetchDailyTarget() {
+        viewModelScope.launch {
+            val result = getDailyTargetUseCase.execute()
+            result.onSuccess { dailyTarget ->
+                Log.d("HomeViewModel", "Daily target fetched successfully: $dailyTarget")
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        dailyTarget = dailyTarget
+                    )
+                }
+            }.onFailure { throwable ->
+                Log.e("HomeViewModel", "Error fetching daily target: ", throwable)
+            }
+        }
+    }
 }
 
 data class HomeUiState(
     val meals: List<MealResponse> = emptyList(),
     val isLoading: Boolean = false,
     val error: MealError? = null,
-    val totalMacros: FoodMacroNutrient? = null // Added to store total macronutrients
+    val totalMacros: FoodMacroNutrient? = null,
+    val dailyTarget: DailyTarget? = null
 )
 
 sealed class MealError {

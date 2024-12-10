@@ -6,6 +6,7 @@ import com.lalapanbulaos.nutric.features.healthinfo.data.repository.HealthInfoRe
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.HealthInfoViewModel
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.CreateHealthInfoUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetAllergiesUseCase
+import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetDailyTargetUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.GetHealthInfoUseCase
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.HealthInfoStepManager
 import com.lalapanbulaos.nutric.features.healthinfo.usecase.ValidateInputStepUseCase
@@ -42,4 +43,12 @@ class HealthInfoModule {
     fun provideCreateHealthInfoUseCase(healthInfoRepository: HealthInfoRepository): CreateHealthInfoUseCase {
         return CreateHealthInfoUseCase(healthInfoRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideGetDailyTargetUseCase(healthInfoRepository: HealthInfoRepository): GetDailyTargetUseCase {
+        return GetDailyTargetUseCase(healthInfoRepository)
+    }
+
+
 }

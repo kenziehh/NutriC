@@ -11,4 +11,5 @@ sealed class AppRoutes(val route: String) {
     object Profile : AppRoutes("profile")
     object Statistics : AppRoutes("statistics")
     object HealthInfo : AppRoutes("health-info")
+    object Notification : AppRoutes("notification")
 }

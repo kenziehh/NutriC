@@ -15,6 +15,7 @@ import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthState
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
 import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthInfoScreen
 import com.lalapanbulaos.nutric.features.home.presentation.screen.HomeScreen
+import com.lalapanbulaos.nutric.features.notifications.presentation.NotificationScreen
 import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
 import com.lalapanbulaos.nutric.features.profile.presentation.screen.ProfileScreen
 import com.lalapanbulaos.nutric.features.scan_food.presentation.screen.ScannerScreen
@@ -83,7 +84,7 @@ fun NavGraph(
 
         composable(AppRoutes.Home.route) {
             NutriCScaffold(navController = navController) {
-                HomeScreen()
+                HomeScreen(navController=navController)
             }
         }
 
@@ -124,6 +125,12 @@ fun NavGraph(
                 navController.navigate(AppRoutes.Home.route) {
                     popUpTo(AppRoutes.HealthInfo.route) { inclusive = true }
                 }
+            })
+        }
+
+        composable(AppRoutes.Notification.route) {
+            NotificationScreen(onGoBack = {
+                navController.popBackStack()
             })
         }
     }

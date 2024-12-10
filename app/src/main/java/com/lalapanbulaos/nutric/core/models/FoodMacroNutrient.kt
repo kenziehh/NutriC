@@ -11,6 +11,9 @@ data class FoodMacroNutrient(
     val calories: Float,
     val protein: Float,
     val fat: Float,
-    val carbohydrates: Float
+    val carbohydrates: Float,
+    val fiber: Float,
+    val sugar: Float
+
 )
 

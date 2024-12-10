@@ -6,8 +6,8 @@ import com.lalapanbulaos.nutric.features.meal.data.remote.MealService
 import javax.inject.Inject
 
 class MealRepository @Inject constructor(private val mealService: MealService) {
-    suspend fun getMeals():Result<List<MealResponse>>{
-        val response = mealService.getMeals()
+    suspend fun getMeals(filterBy: String?=null): Result<List<MealResponse>> {
+        val response = mealService.getMeals(filterBy = filterBy)
 
         Log.d("MealRepository", "Response code: ${response.code()}")
         Log.d("MealRepository", "Response body: ${response.body()}")

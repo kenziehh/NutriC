@@ -1,5 +1,6 @@
 package com.lalapanbulaos.nutric.features.healthinfo.data.remote
 
+import com.lalapanbulaos.nutric.core.models.DailyTarget
 import com.lalapanbulaos.nutric.core.models.HealthInfo
 import com.lalapanbulaos.nutric.core.network.models.ApiResponse
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.DailyTarget
@@ -25,4 +26,7 @@ interface HealthInfoService {
 
 //  @PUT("health-info")
 //  suspend fun updateHealthInfo(@Body request: HealthInfoRequest, @Header("Authorization") token: String): Response<ApiResponse<HealthInfo>>
+
+  @GET("health-info/daily-target")
+  suspend fun getDailyTarget(): Response<ApiResponse<DailyTarget>>
 }

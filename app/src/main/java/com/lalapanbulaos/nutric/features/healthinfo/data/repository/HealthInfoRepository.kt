@@ -3,6 +3,7 @@ package com.lalapanbulaos.nutric.features.healthinfo.data.repository
 import android.util.Log
 import androidx.compose.runtime.collectAsState
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
+import com.lalapanbulaos.nutric.core.models.DailyTarget
 import com.lalapanbulaos.nutric.core.models.HealthInfo
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.DailyTarget
 import com.lalapanbulaos.nutric.features.healthinfo.data.model.HealthInfoRequest

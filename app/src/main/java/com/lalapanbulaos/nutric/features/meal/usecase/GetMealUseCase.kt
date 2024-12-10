@@ -5,8 +5,8 @@ import com.lalapanbulaos.nutric.features.meal.data.repository.MealRepository
 import javax.inject.Inject
 
 class GetMealUseCase @Inject constructor(private val mealRepository: MealRepository) {
-    suspend fun execute(): Result<List<MealResponse>>{
-        return mealRepository.getMeals()
+    suspend fun execute(filterBy: String? = null): Result<List<MealResponse>> {
+        return mealRepository.getMeals(filterBy)
     }
 
 }

@@ -19,6 +19,8 @@ class GetTotalMacroNutrientUseCase @Inject constructor(private val mealRepositor
                 var totalProtein = 0f
                 var totalFat = 0f
                 var totalCarbohydrates = 0f
+                var totalFibers = 0f
+                var totalSugars = 0f
 
                 mealResponses.forEach { meal ->
                     meal.food.foodMacroNutrient?.let { macro ->
@@ -26,6 +28,8 @@ class GetTotalMacroNutrientUseCase @Inject constructor(private val mealRepositor
                         totalProtein += macro.protein
                         totalFat += macro.fat
                         totalCarbohydrates += macro.carbohydrates
+                        totalFibers += macro.fiber
+                        totalSugars += macro.sugar
                     }
                 }
 
@@ -36,9 +40,12 @@ class GetTotalMacroNutrientUseCase @Inject constructor(private val mealRepositor
                         calories = totalCalories,
                         protein = totalProtein,
                         fat = totalFat,
-                        carbohydrates = totalCarbohydrates
+                        carbohydrates = totalCarbohydrates,
+                        fiber =totalFibers,
+                        sugar = totalSugars
                     )
                 )
+
             } else {
                 val error = mealResponsesResult.exceptionOrNull()
                 Log.e("GetTotalMacroNutrient", "Failed to fetch meals", error)

@@ -11,29 +11,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
 import com.lalapanbulaos.nutric.presentation.component.NutriCButton
 import com.lalapanbulaos.nutric.presentation.component.NutriCNeutralButton
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 @Composable
-fun StatisticScreen() {
-    val selectedTabIndex = remember { mutableStateOf(0) }
+fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
+    val selectedTabIndex = viewModel.selectedTabIndex.value
+    val totalMacros = viewModel.uiState.collectAsState().value.totalMacros
+
     val tabTypeNames = listOf("Hari", "Minggu", "Bulan")
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -45,33 +45,50 @@ fun StatisticScreen() {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                modifier = Modifier.fillMaxWidth().height(60.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-
+            // Custom Tab dengan NutriCButton dan NutriCNeutralButton
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                items(tabTypeNames.size) { index ->
-                    if (selectedTabIndex.value == index) {
+                tabTypeNames.forEachIndexed { index, name ->
+                    if (selectedTabIndex == index) {
                         NutriCButton(
-                            modifier = Modifier,
-                            onClick = {},
-                            content = { Text(tabTypeNames[index], style = NutriCTypography.bodySm, color = Colors.Neutral.color00) }
+                            onClick = { viewModel.onTabSelected(index) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            content = {
+                                Text(text = name, color = Color.White, textAlign = TextAlign.Center)
+                            }
                         )
                     } else {
                         NutriCNeutralButton(
-                            modifier = Modifier,
-                            content = { Text(tabTypeNames[index], style = NutriCTypography.bodySm, color = Colors.Neutral.color30) },
-                            onClick = { selectedTabIndex.value = index }
+                            onClick = { viewModel.onTabSelected(index) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(8.dp),
+                            content = {
+                                Text(text = name, color = Color.Black, textAlign = TextAlign.Center)
+                            }
                         )
                     }
                 }
             }
+
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            totalMacros?.let {
+                NutritionTable(foodMacroNutrient = totalMacros)
+            }
         }
-        NutritionTable()
     }
 }
+
+
+
 
 
 
@@ -106,24 +123,22 @@ fun BarChart(){
             }
         }
     }
-    NutritionTable()
 
 }
 
 @Composable
-fun NutritionTable() {
+fun NutritionTable(foodMacroNutrient: FoodMacroNutrient) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Colors.Alomani.green, shape = RoundedCornerShape(12.dp))
     ) {
         TableHeader()
-        NutritionRow("Protein", "6gram", "10%")
-        NutritionRow("Karbohidrat", "10gram", "60%")
-        NutritionRow("Lemak", "5gram", "48%")
-        NutritionRow("Gula", "1gram", "67%")
-        NutritionRow("Garam", "7gram", "69%")
-        NutritionRow("Serat", "-", "10%")
+        NutritionRow("Protein", foodMacroNutrient.protein.toString(), "10%")
+        NutritionRow("Karbohidrat", foodMacroNutrient.carbohydrates.toString(), "60%")
+        NutritionRow("Lemak", foodMacroNutrient.fat.toString(), "48%")
+        NutritionRow("Gula", foodMacroNutrient.sugar.toString(), "67%")
+        NutritionRow("Serat", foodMacroNutrient.fiber.toString(), "10%")
     }
 }
 
@@ -135,16 +150,25 @@ private fun TableHeader() {
             .padding(vertical = 12.dp, horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("")
         Text(
-            text = "Rata-rate",
+            text = "Rata-rata",
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "Jumlah",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End
         )
         Text(
             text = "%",
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End
         )
     }
 }
@@ -165,15 +189,22 @@ private fun NutritionRow(
     ) {
         Text(
             text = nutrient,
-            style = NutriCTypography.subHeadingXs
+            style = NutriCTypography.subHeadingXs,
+            modifier = Modifier.weight(1f)
         )
         Text(
             text = amount,
-            style = NutriCTypography.subHeadingXs
+            style = NutriCTypography.subHeadingXs,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 4.dp)
         )
         Text(
             text = percentage,
-            style = NutriCTypography.subHeadingXs
+            style = NutriCTypography.subHeadingXs,
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(1f)
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.lalapanbulaos.nutric.presentation.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,10 +61,11 @@ fun NutriCOutlinedButton(
         shape = RoundedCornerShape(14.dp),
         contentPadding = PaddingValues(16.dp),
         enabled = enabled,
+        border = BorderStroke(1.dp, Colors.Primary.color40),
         colors = ButtonDefaults.outlinedButtonColors(
             backgroundColor = Color.Transparent,
             contentColor = Colors.Primary.color40,
-            disabledContentColor = Colors.Primary.color30
+            disabledContentColor = Colors.Primary.color30,
         )
     ) {
         Text(text = text, style = CustomTypography.labelLarge)

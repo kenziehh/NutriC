@@ -25,6 +25,7 @@ import com.lalapanbulaos.nutric.presentation.theme.Colors
 
 @Composable
 fun NutriCTextField(
+    readOnly: Boolean = false,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
@@ -53,6 +54,8 @@ fun NutriCTextField(
 
 
     TextField(
+        singleLine = true,
+        readOnly = readOnly,
         value = value,
         onValueChange = onValueChange,
         placeholder = { Text(placeholder, color = Colors.Neutral.color30) },

@@ -2,6 +2,7 @@ package com.lalapanbulaos.nutric.features.home.presentation.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
@@ -40,8 +42,10 @@ import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 @Composable
 fun HomeScreen(
-        viewModel: HomeViewModel = hiltViewModel()
-) {
+        viewModel: HomeViewModel = hiltViewModel() ,
+        navController: NavController
+
+        ) {
         val uiState by viewModel.uiState.collectAsState()
         val userName by viewModel.userName.collectAsState()
 
@@ -52,9 +56,14 @@ fun HomeScreen(
                                 Text(userName, style = NutriCTypography.heading)
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(painter = painterResource(R.drawable.notif), contentDescription = "notification", modifier = Modifier.size(24.dp))
+                                Image(painter = painterResource(R.drawable.notif), contentDescription = "notification", modifier = Modifier.size(24.dp).clickable {
+                                        navController.navigate("notification")
+
+                                })
                                 Spacer(modifier = Modifier.width(14.dp))
-                                Image(painter = painterResource(R.drawable.photo_profile), contentDescription = "notification", modifier = Modifier.size(48.dp))
+                                Image(painter = painterResource(R.drawable.photo_profile), contentDescription = "profile", modifier = Modifier.size(48.dp).clickable {
+                                        navController.navigate("profile")
+                                })
                         }
                 }
                 Spacer(Modifier.height(32.dp))

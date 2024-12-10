@@ -33,7 +33,9 @@ import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 
 @Composable
-fun NotificationScreen() {
+fun NotificationScreen(
+    onGoBack: () -> Unit,
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,7 +43,7 @@ fun NotificationScreen() {
                 modifier = Modifier.safeDrawingPadding(),
                 title = { Text("Notifikasi") },
                 navigationIcon = {
-                    IconButton(onClick = { /* Back action */ }) {
+                    IconButton(onClick = onGoBack ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back"

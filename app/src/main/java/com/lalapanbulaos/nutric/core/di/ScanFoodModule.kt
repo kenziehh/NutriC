@@ -2,7 +2,9 @@ package com.lalapanbulaos.nutric.core.di
 
 import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.features.scan_food.data.remote.FoodPredictService
+import com.lalapanbulaos.nutric.features.scan_food.data.remote.MealService
 import com.lalapanbulaos.nutric.features.scan_food.data.repository.FoodPredictRepository
+import com.lalapanbulaos.nutric.features.scan_food.data.repository.MealLogRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,9 +23,19 @@ class ScanFoodModule {
 
     @Provides
     @Singleton
-    fun provideFoodPredictRepository(foodPredictService: FoodPredictService, userPreferencesManager: UserPreferencesManager): FoodPredictRepository {
-        return FoodPredictRepository(foodPredictService, userPreferencesManager)
+    fun provideFoodPredictRepository(foodPredictService: FoodPredictService): FoodPredictRepository {
+        return FoodPredictRepository(foodPredictService)
     }
 
+    @Provides
+    @Singleton
+    fun provideMealService(retrofit: Retrofit): MealService {
+        return retrofit.create(MealService::class.java)
+    }
 
+    @Provides
+    @Singleton
+    fun provideMealLogRepository(mealService: MealService): MealLogRepository {
+        return MealLogRepository(mealService)
+    }
 }

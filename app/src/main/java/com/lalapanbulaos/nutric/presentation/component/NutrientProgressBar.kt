@@ -28,14 +28,23 @@ import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
 @Composable
-fun NutrientProgressBar(label: String, current: Int, goal: Int, imageResource: Int) {
-    val adjustedCurrent = when {
-        current == 0 -> 1
-        current > goal -> maxOf(goal - 1, 0)
-        else -> current
-    }
+fun NutrientProgressBar(
+    label: String,
+    current: Int,
+    goal: Int,
+    imageResource: Int,
+    currentPlusScannedFood: Int? = null
+) {
+    val adjustedCurrent = min(current, goal)
+    val totalProgress = currentPlusScannedFood?.let { min(current + it, goal) } ?: adjustedCurrent
 
-    val progress = if (goal > 0) min(adjustedCurrent.toFloat() / goal, 1f) else 0f
+    val progress = if (goal > 0) adjustedCurrent.toFloat() / goal else 0f
+    val additionalProgress = if (goal > 0) totalProgress.toFloat() / goal else 0f
+
+    // Ensure weights are greater than zero
+    val validProgress = maxOf(progress, 0.01f)
+    val validAdditionalProgress = maxOf(additionalProgress - progress, 0.01f)
+    val remainingProgress = maxOf(1f - additionalProgress, 0.01f)
 
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
@@ -45,7 +54,11 @@ fun NutrientProgressBar(label: String, current: Int, goal: Int, imageResource: I
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column {
-            Text(text = label, color = Colors.Neutral.color50, style = NutriCTypography.bodyXs)
+            Text(
+                text = label,
+                color = Colors.Neutral.color50,
+                style = NutriCTypography.bodyXs
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "$current/$goal g",
@@ -60,7 +73,7 @@ fun NutrientProgressBar(label: String, current: Int, goal: Int, imageResource: I
             ) {
                 Box(
                     modifier = Modifier
-                        .weight(progress)
+                        .weight(validProgress)
                         .height(4.dp)
                         .background(
                             color = Colors.Secondary.color50,
@@ -69,7 +82,16 @@ fun NutrientProgressBar(label: String, current: Int, goal: Int, imageResource: I
                 )
                 Box(
                     modifier = Modifier
-                        .weight(1f - progress)
+                        .weight(validAdditionalProgress)
+                        .height(4.dp)
+                        .background(
+                            color = Colors.Warning.color50,
+                            shape = RoundedCornerShape(100.dp)
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(remainingProgress)
                         .height(4.dp)
                         .background(
                             Colors.Secondary.color20.copy(alpha = 0.3f),

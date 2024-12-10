@@ -17,15 +17,11 @@ import com.lalapanbulaos.nutric.features.healthinfo.presentation.screen.HealthIn
 import com.lalapanbulaos.nutric.features.home.presentation.screen.HomeScreen
 import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScreen
 import com.lalapanbulaos.nutric.features.profile.presentation.screen.ProfileScreen
+import com.lalapanbulaos.nutric.features.scan_food.presentation.screen.ScannerScreen
 import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
 import com.lalapanbulaos.nutric.features.statistic.presentation.StatisticScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 import kotlinx.coroutines.runBlocking
-
-@Composable
-fun ScanFoodScreen() {
-    Text("INI scan")
-}
 
 @Composable
 fun ArticleScreen() {
@@ -52,7 +48,6 @@ fun ArticleScreen() {
 @Composable
 fun NavGraph(
     startDestination: String = AppRoutes.Splash.route,
-    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
 //    val authState = authViewModel.authState.collectAsState().value
@@ -93,9 +88,10 @@ fun NavGraph(
         }
 
         composable(AppRoutes.ScanFood.route) {
-            NutriCScaffold(navController = navController) {
-                ScanFoodScreen()
-            }
+                ScannerScreen(onGoBack = {
+                    navController.popBackStack()
+                })
+
         }
 
         composable(AppRoutes.Articles.route) {

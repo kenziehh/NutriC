@@ -2,9 +2,10 @@ package com.lalapanbulaos.nutric.core.models
 
 import com.google.gson.annotations.SerializedName
 
+import com.google.gson.annotations.SerializedName
+
 data class FoodMacroNutrient(
     val id: String,
-
     @SerializedName("food_id")
     val foodId: String,
 
@@ -14,6 +15,5 @@ data class FoodMacroNutrient(
     val carbohydrates: Float,
     val fiber: Float,
     val sugar: Float
-
 )
 

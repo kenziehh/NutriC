@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +35,6 @@ import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCar
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
 import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
 import com.lalapanbulaos.nutric.presentation.component.NutrientProgressBar
-import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 
@@ -66,6 +63,11 @@ fun HomeScreen(
                         val totalCarbs = uiState.totalMacros?.carbohydrates ?: 0
                         val totalProteins = uiState.totalMacros?.protein ?: 0
                         val totalFats = uiState.totalMacros?.fat ?: 0
+                        val targetCalories = uiState.dailyTarget?.calories ?: 2400
+                        val targetCarbs = uiState.dailyTarget?.carbohydrates ?: 100
+                        val targetProteins = uiState.dailyTarget?.protein ?: 100
+                        val targetFats = uiState.dailyTarget?.fat ?: 100
+
                         Row(Modifier.fillMaxWidth().height(200.dp).background(color = Colors.Primary.color10, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))){
                                 Column(
                                         modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
@@ -73,7 +75,7 @@ fun HomeScreen(
                                         verticalArrangement = Arrangement.Center
                                 ){
                                         Spacer(modifier = Modifier.height(42.dp))
-                                        HalfCircularProgressBar(totalCalories = totalCalories.toInt(), calorieNeeds = 2500)
+                                        HalfCircularProgressBar(totalCalories = totalCalories.toInt(), calorieNeeds = targetCalories.toInt())
                                         Spacer(modifier = Modifier.height(42.dp))
                                 }
                         }
@@ -83,15 +85,15 @@ fun HomeScreen(
                         ) {
                                 Row(modifier = Modifier.padding(vertical = 16.dp, horizontal = 12.dp)) {
                                         Column(modifier = Modifier.weight(1f)) {
-                                                NutrientProgressBar("Karbohidrat", totalCarbs.toInt(), 145,R.drawable.karbohidrat)
+                                                NutrientProgressBar("Karbohidrat", totalCarbs.toInt(), targetCarbs.toInt(),R.drawable.karbohidrat)
                                         }
                                         Spacer(modifier = Modifier.width(16.dp))
                                         Column(modifier = Modifier.weight(1f)) {
-                                                NutrientProgressBar("Protein", totalProteins.toInt(), 190,R.drawable.protein)
+                                                NutrientProgressBar("Protein", totalProteins.toInt(), targetProteins.toInt(),R.drawable.protein)
                                         }
                                         Spacer(modifier = Modifier.width(16.dp))
                                         Column(modifier = Modifier.weight(1f)) {
-                                                NutrientProgressBar("Lemak", totalFats.toInt(), 90,R.drawable.lemak)
+                                                NutrientProgressBar("Lemak", totalFats.toInt(), targetFats.toInt(),R.drawable.lemak)
                                         }
                                 }
 

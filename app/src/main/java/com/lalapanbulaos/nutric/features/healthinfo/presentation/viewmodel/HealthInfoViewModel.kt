@@ -58,9 +58,11 @@ class HealthInfoViewModel @Inject constructor(
 
     fun onEvent(event: HealthInfoEvent) {
         when (event) {
+            is HealthInfoEvent.OnGenderChanged -> updateGender(event.gender)
             is HealthInfoEvent.OnAgeChanged -> updateAge(event.age)
             is HealthInfoEvent.OnHeightChanged -> updateHeight(event.height)
             is HealthInfoEvent.OnWeightChanged -> updateWeight(event.weight)
+            is HealthInfoEvent.OnActivityLevelChanged -> updateActivityLevel(event.activityLevel)
             is HealthInfoEvent.OnAllergyToggled -> toggleAllergy(event.allergy)
             HealthInfoEvent.OnNextStep -> goToNextStep()
             HealthInfoEvent.OnPreviousStep -> goToPreviousStep()
@@ -71,6 +73,32 @@ class HealthInfoViewModel @Inject constructor(
     private fun updateAge(age: String) {
         _uiState.update { currentState ->
             val newInputState = currentState.inputState.copy(age = age)
+            currentState.copy(
+                inputState = newInputState,
+                isAllowedNext = stepManager.canMoveToNextStep(
+                    currentState.currentStep,
+                    newInputState
+                )
+            )
+        }
+    }
+
+    private fun updateGender(gender: String) {
+        _uiState.update { currentState ->
+            val newInputState = currentState.inputState.copy(gender = gender)
+            currentState.copy(
+                inputState = newInputState,
+                isAllowedNext = stepManager.canMoveToNextStep(
+                    currentState.currentStep,
+                    newInputState
+                )
+            )
+        }
+    }
+
+    private fun updateActivityLevel(activityLevel: ActivityLevel) {
+        _uiState.update { currentState ->
+            val newInputState = currentState.inputState.copy(activityLevel = activityLevel)
             currentState.copy(
                 inputState = newInputState,
                 isAllowedNext = stepManager.canMoveToNextStep(
@@ -162,11 +190,12 @@ class HealthInfoViewModel @Inject constructor(
                 _uiState.update { it.copy(isSubmitting = true) }
 
                 val createRequest = HealthInfoRequest(
+                    gender = uiState.value.inputState.gender,
                     age = uiState.value.inputState.age.toInt(),
                     height = uiState.value.inputState.height.toDouble(),
                     weight = uiState.value.inputState.weight.toDouble(),
                     allergiesName = uiState.value.inputState.allergies,
-                    activityLevel = ActivityLevel.MODERATE
+                    activityLevel = uiState.value.inputState.activityLevel
                 )
 
                 val response = createHealthInfoUseCase.execute(createRequest)
@@ -217,9 +246,11 @@ data class HealthInfoUiState(
 )
 
 data class InputState(
+    val gender: String = "",
     val age: String = "",
     val height: String = "",
     val weight: String = "",
+    val activityLevel: ActivityLevel = ActivityLevel.MODERATELY_ACTIVE,
     val allergies: List<String> = emptyList()
 )
 
@@ -229,9 +260,11 @@ sealed class HealthInfoError {
 }
 
 sealed class HealthInfoEvent {
+    data class OnGenderChanged(val gender: String) : HealthInfoEvent()
     data class OnAgeChanged(val age: String) : HealthInfoEvent()
     data class OnHeightChanged(val height: String) : HealthInfoEvent()
     data class OnWeightChanged(val weight: String) : HealthInfoEvent()
+    data class OnActivityLevelChanged(val activityLevel: ActivityLevel) : HealthInfoEvent()
     data class OnAllergyToggled(val allergy: Allergy) : HealthInfoEvent()
     object OnNextStep : HealthInfoEvent()
     object OnPreviousStep : HealthInfoEvent()

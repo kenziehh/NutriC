@@ -1,11 +1,17 @@
 package com.lalapanbulaos.nutric.features.healthinfo.usecase
 
+import com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.InputState
 import javax.inject.Inject
 
 class HealthInfoStepManager @Inject constructor(
     private val validateInputStepUseCase: ValidateInputStepUseCase
 ) {
     fun getSteps(): List<HealthInfoInputStep> = listOf(
+        HealthInfoInputStep(
+            id = "gender",
+            title = "Pilih jenis kelamin",
+            description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu"
+        ),
         HealthInfoInputStep(
             id = "age",
             title = "Berapa umur kamu?",
@@ -22,6 +28,11 @@ class HealthInfoStepManager @Inject constructor(
             description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
         ),
         HealthInfoInputStep(
+            id = "activity_level",
+            title = "Berapa tingkat aktivitas kamu?",
+            description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
+        ),
+        HealthInfoInputStep(
             id = "allergies",
             title = "Apakah kamu punya alergi?",
             description = "Kami akan menggunakan ini untuk memberikan kamu pengalaman yang lebih baik dalam menjaga nutrisimu",
@@ -29,7 +40,7 @@ class HealthInfoStepManager @Inject constructor(
         )
     )
 
-    fun canMoveToNextStep(currentStep: Int, inputState: com.lalapanbulaos.nutric.features.healthinfo.presentation.viewmodel.InputState): Boolean {
+    fun canMoveToNextStep(currentStep: Int, inputState: InputState): Boolean {
         return validateInputStepUseCase.isAllowedNext(
             getSteps()[currentStep].id,
             inputState

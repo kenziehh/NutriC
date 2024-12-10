@@ -19,6 +19,7 @@ import com.lalapanbulaos.nutric.features.onboarding.presentation.OnboardingScree
 import com.lalapanbulaos.nutric.features.profile.presentation.screen.ProfileScreen
 import com.lalapanbulaos.nutric.features.scan_food.presentation.screen.ScannerScreen
 import com.lalapanbulaos.nutric.features.splash_screen.presentation.SplashScreen
+import com.lalapanbulaos.nutric.features.statistic.presentation.StatisticScreen
 import com.lalapanbulaos.nutric.presentation.component.NutriCScaffold
 import kotlinx.coroutines.runBlocking
 
@@ -26,23 +27,23 @@ import kotlinx.coroutines.runBlocking
 fun ArticleScreen() {
     Text("INI artike")
 }
-
-@Composable
-fun StatiSticScreen() {
-    Text("INI statistic")
-}
-
-@Composable
-fun ProfileScreen(authViewModel: AuthViewModel = hiltViewModel(), onLogout: () -> Unit) {
-    Button(onClick = {
-        runBlocking {
-            authViewModel.logout()
-        }
-        onLogout()
-    }) {
-        Text("Logout")
-    }
-}
+//
+//@Composable
+//fun StatiSticScreen() {
+//    Text("INI statistic")
+//}
+//
+//@Composable
+//fun ProfileScreen(authViewModel: AuthViewModel = hiltViewModel(), onLogout: () -> Unit) {
+//    Button(onClick = {
+//        runBlocking {
+//            authViewModel.logout()
+//        }
+//        onLogout()
+//    }) {
+//        Text("Logout")
+//    }
+//}
 
 @Composable
 fun NavGraph(
@@ -114,7 +115,7 @@ fun NavGraph(
 
         composable(AppRoutes.Statistics.route) {
             NutriCScaffold(navController = navController) {
-                StatiSticScreen()
+                StatisticScreen()
             }
         }
 

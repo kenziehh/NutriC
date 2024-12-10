@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
-import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
 import com.lalapanbulaos.nutric.features.profile.data.Setting
 import com.lalapanbulaos.nutric.features.profile.data.SettingType
 import com.lalapanbulaos.nutric.features.profile.presentation.viewmodel.ProfileViewModel

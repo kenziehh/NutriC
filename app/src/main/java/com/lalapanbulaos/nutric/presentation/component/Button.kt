@@ -15,6 +15,10 @@ import androidx.compose.ui.unit.dp
 import com.lalapanbulaos.nutric.presentation.theme.Colors
 import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 
+// Base configuration for button styles
+private val DefaultButtonShape = RoundedCornerShape(14.dp)
+private val DefaultButtonPadding = PaddingValues(16.dp)
+
 @Composable
 fun NutriCButton(
     modifier: Modifier = Modifier,
@@ -32,8 +36,8 @@ fun NutriCButton(
             disabledBackgroundColor = Colors.Primary.color30,
             disabledContentColor = Color.White
         ),
-        shape = RoundedCornerShape(14.dp),
-        contentPadding = PaddingValues(16.dp),
+        shape = DefaultButtonShape,
+        contentPadding = DefaultButtonPadding,
         enabled = enabled
     ) {
         if (content != null) {
@@ -47,7 +51,6 @@ fun NutriCButton(
     }
 }
 
-
 @Composable
 fun NutriCOutlinedButton(
     text: String,
@@ -58,8 +61,8 @@ fun NutriCOutlinedButton(
     OutlinedButton(
         onClick = onClick,
         modifier = modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        contentPadding = PaddingValues(16.dp),
+        shape = DefaultButtonShape,
+        contentPadding = DefaultButtonPadding,
         enabled = enabled,
         border = BorderStroke(1.dp, Colors.Primary.color40),
         colors = ButtonDefaults.outlinedButtonColors(
@@ -71,3 +74,36 @@ fun NutriCOutlinedButton(
         Text(text = text, style = CustomTypography.labelLarge)
     }
 }
+
+@Composable
+fun NutriCNeutralButton(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+    content: (@Composable (() -> Unit))? = null,
+    text: String = "NutriC"
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Colors.Neutral.color20,
+            contentColor = Colors.Neutral.color50,
+            disabledBackgroundColor = Colors.Neutral.color10,
+            disabledContentColor = Colors.Neutral.color50
+        ),
+        shape = DefaultButtonShape,
+        contentPadding = DefaultButtonPadding,
+        enabled = enabled
+    ) {
+        if (content != null) {
+            content()
+        } else {
+            Text(
+                text = text,
+                style = CustomTypography.labelLarge
+            )
+        }
+    }
+}
+

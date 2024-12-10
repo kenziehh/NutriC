@@ -2,6 +2,8 @@ package com.lalapanbulaos.nutric.core.models
 
 import com.google.gson.annotations.SerializedName
 
+import com.google.gson.annotations.SerializedName
+
 data class Food(
     val id: String,
     val name: String,
@@ -10,6 +12,7 @@ data class Food(
     val foodMacroNutrient: FoodMacroNutrient?,
     @SerializedName("food_micronutrient")
     val foodMicroNutrient: FoodMicroNutrient?,
+
     val allergens: List<Allergy>,
 )
 

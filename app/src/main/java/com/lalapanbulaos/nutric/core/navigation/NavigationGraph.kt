@@ -1,6 +1,15 @@
 package com.lalapanbulaos.nutric.core.navigation
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -53,7 +62,28 @@ fun NavGraph(
     val navController = rememberNavController()
 //    val authState = authViewModel.authState.collectAsState().value
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(navController = navController, startDestination = startDestination,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideIntoContainer(
+                animationSpec = tween(300, easing = EaseIn),
+                towards = AnimatedContentTransitionScope.SlideDirection.Start
+            )
+        },
+        exitTransition = {
+            fadeOut(
+                animationSpec = tween(
+                    300, easing = LinearEasing
+                )
+            ) + slideOutOfContainer(
+                animationSpec = tween(300, easing = EaseOut),
+                towards = AnimatedContentTransitionScope.SlideDirection.End
+            )
+        }
+    ) {
 
         composable(AppRoutes.Splash.route) {
             SplashScreen(onTimeout = {
@@ -75,36 +105,63 @@ fun NavGraph(
                     popUpTo(AppRoutes.Auth.route) { inclusive = true }
                 }
             },
-            onRequiresHealthInfo = {
-                navController.navigate(AppRoutes.HealthInfo.route) {
-                    popUpTo(AppRoutes.Auth.route) { inclusive = true }
-                }
-            })
+                onRequiresHealthInfo = {
+                    navController.navigate(AppRoutes.HealthInfo.route) {
+                        popUpTo(AppRoutes.Auth.route) { inclusive = true }
+                    }
+                })
         }
 
-        composable(AppRoutes.Home.route) {
+        composable(AppRoutes.Home.route, enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }) {
             NutriCScaffold(navController = navController) {
-                HomeScreen(navController=navController)
+                HomeScreen(navController = navController)
             }
         }
 
-        composable(AppRoutes.ScanFood.route) {
-                ScannerScreen(onGoBack = {
-                    navController.popBackStack()
-                })
+        composable(AppRoutes.ScanFood.route,
+            enterTransition = {
+                fadeIn(
+                    animationSpec = tween(
+                        500, easing = LinearEasing
+                    )
+                ) + slideIntoContainer(
+                    animationSpec = tween(500, easing = EaseIn),
+                    towards = AnimatedContentTransitionScope.SlideDirection.Up
+                )
+            },
+            exitTransition = {
+                fadeOut(
+                    animationSpec = tween(
+                        350, easing = LinearEasing
+                    )
+                ) + slideOutOfContainer(
+                    animationSpec = tween(300, easing = EaseOut),
+                    towards = AnimatedContentTransitionScope.SlideDirection.End
+                )
+            }
+        ) {
+            ScannerScreen(onGoBack = {
+                navController.popBackStack()
+            })
 
         }
 
-        composable(AppRoutes.Articles.route) {
+        composable(AppRoutes.Articles.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }) {
             NutriCScaffold(navController = navController) {
                 ArticleScreen()
             }
         }
 
-        composable(AppRoutes.Profile.route) {
+        composable(AppRoutes.Profile.route,
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }
+        ) {
             NutriCScaffold(navController = navController) {
                 ProfileScreen(
-                    navController=navController,
+                    navController = navController,
                     onLogout = {
                         navController.navigate(AppRoutes.Auth.route) {
                             popUpTo(AppRoutes.Profile.route) { inclusive = true }
@@ -114,7 +171,8 @@ fun NavGraph(
             }
         }
 
-        composable(AppRoutes.Statistics.route) {
+        composable(AppRoutes.Statistics.route, enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None }) {
             NutriCScaffold(navController = navController) {
                 StatisticScreen()
             }

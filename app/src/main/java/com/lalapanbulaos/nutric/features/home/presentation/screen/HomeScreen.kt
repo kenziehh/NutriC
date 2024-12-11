@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -77,17 +82,40 @@ fun HomeScreen(
                         val targetProteins = uiState.dailyTarget?.protein ?: 100
                         val targetFats = uiState.dailyTarget?.fat ?: 100
 
-                        Row(Modifier.fillMaxWidth().height(200.dp).background(color = Colors.Primary.color10, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))){
+                        Box(
+                                modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                        .background(
+                                                color = Color(0xFFE3EDDE),
+                                                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                                        )
+                        ) {
+                                Image(
+                                        painter = painterResource(id = R.drawable.bg_calories_half),
+                                        contentDescription = "Background Image",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                )
+
                                 Column(
-                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                        modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(horizontal = 16.dp),
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         verticalArrangement = Arrangement.Center
-                                ){
+                                ) {
                                         Spacer(modifier = Modifier.height(42.dp))
-                                        HalfCircularProgressBar(totalCalories = totalCalories.toInt(), calorieNeeds = targetCalories.toInt())
+                                        HalfCircularProgressBar(
+                                                totalCalories = totalCalories.toInt(),
+                                                calorieNeeds = targetCalories.toInt()
+                                        )
                                         Spacer(modifier = Modifier.height(42.dp))
                                 }
                         }
+
                         Row(
                                 modifier = Modifier.fillMaxWidth().background(Colors.Neutral.color00, shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)),
                                 horizontalArrangement = Arrangement.SpaceBetween
@@ -127,6 +155,7 @@ fun HomeScreen(
                 when {
                         uiState.isLoading -> {
                                 CircularProgressIndicator(
+                                        color = Colors.Primary.color50,
                                         modifier = Modifier.fillMaxWidth()
                                                 .wrapContentSize(Alignment.Center)
                                 )
@@ -146,8 +175,7 @@ fun HomeScreen(
                                                                         .fillMaxWidth()
                                                                         .padding(16.dp),
                                                                 textAlign = TextAlign.Center
-                                                        )
-                                                }
+                                                        )                                                }
                                         } else {
                                                 items(uiState.meals) { meal ->
                                                         meal.food.foodMacroNutrient?.calories?.let { ActivityCard(currentCalories = it.toInt(), date = "Today", foodName = meal.food.name, imageResource = R.drawable.activity1, targetCalories = 2400) }

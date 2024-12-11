@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -50,6 +51,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -67,10 +70,12 @@ import com.lalapanbulaos.nutric.features.scan_food.presentation.viewmodel.Scanne
 import com.lalapanbulaos.nutric.presentation.component.NutriCButton
 import com.lalapanbulaos.nutric.presentation.component.NutrientProgressBar
 import com.lalapanbulaos.nutric.presentation.theme.Colors
+import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.math.ceil
 
 @Composable
 fun ScannerScreen(
@@ -161,61 +166,75 @@ fun CameraPreview(
                     .align(Alignment.BottomCenter),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = {
-                        scannerViewModel.onToggleCameraLensClicked()
-                    },
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = Colors.Secondary.color50),
+                Box(
+                    modifier = Modifier.width(250.dp)
+                        .padding(bottom = 16.dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.scan),
-                        contentDescription = "switch-camera",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                    Button(
+                        onClick = {
+                            scannerViewModel.onToggleCameraLensClicked()
+                        },
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(containerColor = Colors.Secondary.color50),
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.camerarotate),
+                            contentDescription = "switch-camera",
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
 
-                Button(
-                    onClick = {
-                        val outputOptions = ImageCapture.OutputFileOptions.Builder(
-                            File(
-                                context.cacheDir,
-                                "captured_image.jpg"
-                            )
-                        ).build()
-                        imageCapture.takePicture(
-                            outputOptions,
-                            ContextCompat.getMainExecutor(context),
-                            object : ImageCapture.OnImageSavedCallback {
-                                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                                    Log.d("CameraX", "Capture success")
-                                    val imageFile =
-                                        outputFileResults.savedUri?.path?.let { File(it) }
-                                    imageFile?.let {
-                                        scannerViewModel.onCaptureClicked(it)
+                    Button(
+                        enabled = !uiState.value.isScanning,
+                        onClick = {
+                            val outputOptions = ImageCapture.OutputFileOptions.Builder(
+                                File(
+                                    context.cacheDir,
+                                    "captured_image.jpg"
+                                )
+                            ).build()
+                            imageCapture.takePicture(
+                                outputOptions,
+                                ContextCompat.getMainExecutor(context),
+                                object : ImageCapture.OnImageSavedCallback {
+                                    override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                                        Log.d("CameraX", "Capture success")
+                                        val imageFile =
+                                            outputFileResults.savedUri?.path?.let { File(it) }
+                                        imageFile?.let {
+                                            scannerViewModel.onCaptureClicked(it)
+                                        }
+                                    }
+
+                                    override fun onError(exception: ImageCaptureException) {
+                                        Log.e("CameraX", "Capture failed", exception)
                                     }
                                 }
-
-                                override fun onError(exception: ImageCaptureException) {
-                                    Log.e("CameraX", "Capture failed", exception)
-                                }
-                            }
+                            )
+                        },
+                        shape = CircleShape,
+                        colors = ButtonDefaults.buttonColors(containerColor = Colors.Secondary.color50),
+                        modifier = Modifier
+                            .size(72.dp)
+                            .align(Alignment.Center)
+                    ) {
+                        if (uiState.value.isScanning) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White
+                            )
+                            return@Button
+                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.scan),
+                            contentDescription = "scan-food",
+                            modifier = Modifier.size(24.dp)
                         )
-                    },
-                    shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = Colors.Secondary.color50),
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .size(72.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.scan),
-                        contentDescription = "scan-food",
-                        modifier = Modifier.size(24.dp)
-                    )
+                    }
                 }
 
-                if (uiState.value.isScanSuccess) {
+
                     AnimatedVisibility(
                         visible = uiState.value.isScanSuccess,
                         enter = slideInVertically(initialOffsetY = { it }),
@@ -229,7 +248,7 @@ fun CameraPreview(
                             }
                         )
                     }
-                }
+
             }
         }
     }
@@ -244,6 +263,12 @@ private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
         }
     }
 
+data class MacroItem(
+    val label: String,
+    val foodInfoMacro: Int,
+    val dailyTotalMacro: Int,
+    val dailyTarget: Int
+)
 @Composable
 fun ScanResultBottomSheet(
     modifier: Modifier,
@@ -258,12 +283,42 @@ fun ScanResultBottomSheet(
         uiState.dailyTarget
     ) {
         listOf(
-            "Karbohidrat" to (uiState.foodInfo?.foodMacroNutrient?.carbohydrates to uiState.dailyTarget?.carbohydrates),
-            "Protein" to (uiState.foodInfo?.foodMacroNutrient?.protein to uiState.dailyTarget?.protein),
-            "Lemak" to (uiState.foodInfo?.foodMacroNutrient?.fat to uiState.dailyTarget?.fat),
-            "Kalori" to (uiState.foodInfo?.foodMacroNutrient?.calories to uiState.dailyTarget?.calories),
-            "Serat" to (uiState.foodInfo?.foodMacroNutrient?.fiber to uiState.dailyTarget?.fiber),
-            "Gula" to (uiState.foodInfo?.foodMacroNutrient?.sugar to uiState.dailyTarget?.sugar)
+            MacroItem(
+                "Kalori",
+                uiState.foodInfo?.foodMacroNutrient?.calories?.toInt() ?: 1,
+                uiState.dailyTotalMacros?.calories?.toInt() ?: 1,
+                uiState.dailyTarget?.calories?.toInt() ?: 1 // Fallback to 0 if dailyTarget is null
+            ),
+            MacroItem(
+                "Protein",
+                uiState.foodInfo?.foodMacroNutrient?.protein?.toInt() ?: 1,
+                uiState.dailyTotalMacros?.protein?.toInt() ?: 1,
+                uiState.dailyTarget?.protein?.toInt() ?: 1
+            ),
+            MacroItem(
+                "Lemak",
+                uiState.foodInfo?.foodMacroNutrient?.fat?.toInt() ?: 1,
+                uiState.dailyTotalMacros?.fat?.toInt() ?: 1,
+                uiState.dailyTarget?.fat?.toInt() ?: 1
+            ),
+            MacroItem(
+                "Karbohidrat",
+                uiState.foodInfo?.foodMacroNutrient?.carbohydrates?.toInt() ?: 1,
+                uiState.dailyTotalMacros?.carbohydrates?.toInt() ?: 1,
+                uiState.dailyTarget?.carbohydrates?.toInt() ?: 1
+            ),
+            MacroItem(
+                "Serat",
+                uiState.foodInfo?.foodMacroNutrient?.fiber?.toInt() ?: 1,
+                uiState.dailyTotalMacros?.fiber?.toInt() ?: 1,
+                uiState.dailyTarget?.fiber?.toInt() ?: 1
+            ),
+            MacroItem(
+                "Gula",
+                uiState.foodInfo?.foodMacroNutrient?.sugar?.toInt() ?: 1,
+                uiState.dailyTotalMacros?.sugar?.toInt() ?: 1,
+                uiState.dailyTarget?.sugar?.toInt() ?: 1
+            )
         )
     }
 
@@ -273,7 +328,7 @@ fun ScanResultBottomSheet(
             .background(Color.White)
             .safeDrawingPadding()
             .padding(
-                bottom = 0.dp,
+                bottom = 16.dp,
                 top = 24.dp,
                 start = 16.dp,
                 end = 16.dp
@@ -292,7 +347,27 @@ fun ScanResultBottomSheet(
                     color = Colors.Neutral.color50
                 )
                 Spacer(modifier = Modifier.height(1.dp))
-                Text(foodName ?: "", style = NutriCTypography.headingSm)
+                if (uiState.isScanSuccess) {
+                    Text(foodName ?: "", style = NutriCTypography.headingSm)
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(24.dp)
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        Color.Gray.copy(alpha = 0.3f),
+                                        Color.Gray.copy(alpha = 0.1f),
+                                        Color.Gray.copy(alpha = 0.3f)
+                                    ),
+                                    start = Offset(0f, 0f),
+                                    end = Offset(200f, 0f)
+                                )
+                            )
+                    )
+                }
+
             }
 
             if (hasAllergy) {
@@ -316,17 +391,17 @@ fun ScanResultBottomSheet(
 
         if (uiState.isPredictSuccess) {
             LazyVerticalGrid(
-                modifier = Modifier,
+//                modifier = Modifier.height(95.dp),
                 columns = GridCells.Fixed(3),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(gridItems.size) { item ->
                     NutrientProgressBar(
-                        label = gridItems[item].first,
-                        current = gridItems[item].second.first?.toInt() ?: 1,
-//                        current = 10,
-                        goal = gridItems[item].second.second?.toInt() ?: 1,
+                        label = gridItems[item].label,
+                        current = gridItems[item].dailyTotalMacro,
+                        currentPlusScannedFood = gridItems[item].dailyTotalMacro + gridItems[item].foodInfoMacro,
+                        goal = gridItems[item].dailyTarget,
                         imageResource = R.drawable.calories
                     )
                 }
@@ -335,7 +410,7 @@ fun ScanResultBottomSheet(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(95.dp)
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -348,12 +423,22 @@ fun ScanResultBottomSheet(
         Spacer(modifier = Modifier.height(28.dp))
 
         NutriCButton(
+            enabled = uiState.isPredictSuccess && !uiState.isMealSubmitting,
             onClick = {
                 uiState.foodInfo?.let {
                     onMealSubmit()
                 }
             },
-            text = "Tambahkan Aktivitas",
+            content = {
+                if (uiState.isMealSubmitting) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(22.dp),
+                        color = Colors.Primary.color10
+                    )
+                } else {
+                    Text("Tambahkan Aktivitas", style = CustomTypography.labelLarge)
+                }
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }

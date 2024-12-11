@@ -25,5 +25,4 @@ class MealRepository @Inject constructor(private val mealService: MealService) {
             Result.failure(e)
         }
     }
-
 }

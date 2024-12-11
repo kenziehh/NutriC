@@ -5,11 +5,13 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lalapanbulaos.nutric.core.data.local.pref.UserPreferencesManager
 import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
 import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
+import com.lalapanbulaos.nutric.features.meal.usecase.GetMacroTargetPercentageAverage
 import com.lalapanbulaos.nutric.features.meal.usecase.GetMealUseCase
 import com.lalapanbulaos.nutric.features.meal.usecase.GetTotalMacroNutrientUseCase
+import com.lalapanbulaos.nutric.features.meal.usecase.MacroTargetAverage
+import com.lalapanbulaos.nutric.features.meal.usecase.MacroTargetPercentage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,16 +24,19 @@ import javax.inject.Inject
 class StatisticViewModel @Inject constructor(
     private val getMealUseCase: GetMealUseCase,
     private val getTotalMacroNutrientUseCase: GetTotalMacroNutrientUseCase,
-    private val userPreferencesManager: UserPreferencesManager
+    private val getMacroTargetPercentageAverage: GetMacroTargetPercentageAverage
 ) : ViewModel() {
-    private val _mealList = mutableStateOf<List<MealResponse>>(emptyList())
-    val mealList: State<List<MealResponse>> = _mealList
+    private val _mealList = MutableStateFlow<List<MealResponse>>(emptyList())
+    val mealList: StateFlow<List<MealResponse>> = _mealList
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     private val _selectedTabIndex = mutableStateOf(0)
     val selectedTabIndex: State<Int> = _selectedTabIndex
+
+    private val _averageMacroTargetPercentage = MutableStateFlow(MacroTargetAverage.zero())
+    val averageMacroTargetPercentage: StateFlow<MacroTargetAverage> = _averageMacroTargetPercentage
 
     fun onTabSelected(index: Int) {
         _selectedTabIndex.value = index
@@ -40,6 +45,17 @@ class StatisticViewModel @Inject constructor(
 
     init {
         fetchMealsForSelectedTab()
+    }
+
+    private fun getMacroTargetPercentageAverage(meals: List<MealResponse>) {
+        viewModelScope.launch {
+            getMacroTargetPercentageAverage.execute(meals).onSuccess { macroTargetPercentage ->
+                _averageMacroTargetPercentage.value = macroTargetPercentage
+                Log.d("GetMacroTargetPercentageAverage", macroTargetPercentage.toString())
+            }.onFailure { exception ->
+                Log.e("GetMacroTargetPercentageAverage", "Error calculating macro target percentage", exception)
+            }
+        }
     }
 
     private fun fetchMealsForSelectedTab() {
@@ -56,6 +72,8 @@ class StatisticViewModel @Inject constructor(
                 Log.e("StatisticViewModel", meals.toString())
                 _mealList.value = meals
                 fetchTotalMacros(meals = meals)
+                Log.d("StatisticViewModel", "Starting to calculate average macro target percentage")
+                getMacroTargetPercentageAverage(meals)
             }
             result.onFailure { exception ->
                 Log.e("StatisticViewModel", "Error fetching meals", exception)

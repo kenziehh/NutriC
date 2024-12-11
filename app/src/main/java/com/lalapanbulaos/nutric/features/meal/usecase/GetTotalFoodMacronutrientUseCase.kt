@@ -6,7 +6,7 @@ import com.lalapanbulaos.nutric.features.meal.data.models.MealResponse
 import com.lalapanbulaos.nutric.features.meal.data.repository.MealRepository
 import javax.inject.Inject
 
-class GetTotalMacroNutrientUseCase @Inject constructor(private val mealRepository: MealRepository) {
+class  GetTotalMacroNutrientUseCase @Inject constructor(private val mealRepository: MealRepository) {
 
     suspend fun execute(meals: List<MealResponse>): Result<FoodMacroNutrient> {
         return try {
@@ -51,6 +51,45 @@ class GetTotalMacroNutrientUseCase @Inject constructor(private val mealRepositor
                 Log.e("GetTotalMacroNutrient", "Failed to fetch meals", error)
                 Result.failure(error ?: Exception("Unknown error"))
             }
+        } catch (e: Exception) {
+            Log.e("GetTotalMacroNutrient", "Unexpected error occurred", e)
+            Result.failure(e)
+        }
+    }
+
+    fun executeWithMeals(meals: List<MealResponse>): Result<FoodMacroNutrient> {
+        return try {
+            var totalCalories = 0f
+            var totalProtein = 0f
+            var totalFat = 0f
+            var totalCarbohydrates = 0f
+            var totalFibers = 0f
+            var totalSugars = 0f
+
+            meals.forEach { meal ->
+                meal.food.foodMacroNutrient?.let { macro ->
+                    totalCalories += macro.calories
+                    totalProtein += macro.protein
+                    totalFat += macro.fat
+                    totalCarbohydrates += macro.carbohydrates
+                    totalFibers += macro.fiber
+                    totalSugars += macro.sugar
+                }
+            }
+
+            Result.success(
+                FoodMacroNutrient(
+                    id = "total",
+                    foodId = "aggregated",
+                    calories = totalCalories,
+                    protein = totalProtein,
+                    fat = totalFat,
+                    carbohydrates = totalCarbohydrates,
+                    fiber = totalFibers,
+                    sugar = totalSugars
+                )
+            )
+
         } catch (e: Exception) {
             Log.e("GetTotalMacroNutrient", "Unexpected error occurred", e)
             Result.failure(e)

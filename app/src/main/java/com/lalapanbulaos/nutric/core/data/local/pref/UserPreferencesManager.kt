@@ -24,6 +24,7 @@ class UserPreferencesManager @Inject constructor(
         private val KEY_USER_ID = stringPreferencesKey("user_id")
         private val KEY_USERNAME = stringPreferencesKey("username")
         private val KEY_ACCESS_TOKEN = stringPreferencesKey("access_token")
+        private val IS_ONBOARDING_COMPLETED = stringPreferencesKey("is_onboarding_completed")
     }
 
     suspend fun saveUser(user: User) {
@@ -81,4 +82,16 @@ class UserPreferencesManager @Inject constructor(
             return null
         }
     }
+
+    suspend fun setOnboardingCompleted(isCompleted: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[IS_ONBOARDING_COMPLETED] = isCompleted.toString()
+        }
+    }
+
+    val onboardingCompleted: Flow<Boolean> = dataStore.data
+        .map { preferences ->
+            preferences[IS_ONBOARDING_COMPLETED]?.toBoolean() ?: false
+        }.distinctUntilChanged()
+
 }

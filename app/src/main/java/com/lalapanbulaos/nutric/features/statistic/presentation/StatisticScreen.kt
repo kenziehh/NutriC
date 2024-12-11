@@ -2,7 +2,6 @@ package com.lalapanbulaos.nutric.features.statistic.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,11 +17,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
+import com.lalapanbulaos.nutric.R
+import com.lalapanbulaos.nutric.core.utils.formatIsoDate
+import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
+import com.lalapanbulaos.nutric.features.meal.usecase.MacroTargetAverage
+import com.lalapanbulaos.nutric.presentation.component.BarChart
 import com.lalapanbulaos.nutric.presentation.component.NutriCButton
 import com.lalapanbulaos.nutric.presentation.component.NutriCNeutralButton
 import com.lalapanbulaos.nutric.presentation.theme.Colors
@@ -33,6 +37,8 @@ import com.lalapanbulaos.nutric.presentation.theme.NutriCTypography
 fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
     val selectedTabIndex = viewModel.selectedTabIndex.value
     val totalMacros = viewModel.uiState.collectAsState().value.totalMacros
+    val meals = viewModel.mealList.collectAsState().value
+    val averageMacroTarget = viewModel.averageMacroTargetPercentage.collectAsState().value
 
     val tabTypeNames = listOf("Hari", "Minggu", "Bulan")
 
@@ -77,68 +83,63 @@ fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BarChart(averageMacroTarget)
 
             Spacer(modifier = Modifier.height(16.dp))
 
             totalMacros?.let {
-                NutritionTable(foodMacroNutrient = totalMacros)
+                NutritionTable(averageMacroTarget)
             }
-        }
-    }
-}
 
+            Spacer(modifier = Modifier.height(16.dp))
 
+            Column(modifier = Modifier.fillMaxWidth()) {
+                if (meals.isEmpty()) {
+                        Text(
+                            text = "Belum ada aktivitas hari ini",
+                            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
+                            color = Colors.Neutral.color40,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            textAlign = TextAlign.Center
+                        )
 
-
-
-
-@Composable
-fun BarChart(){
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text("Nutrisi", style = NutriCTypography.subHeadingMd)
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val nutrients = listOf("Protein", "Karbo", "Lemak", "Gula", "Garam", "Serat")
-            val percentages = listOf(0.8f, 0.6f, 0.48f, 0.67f, 0.69f, 0.69f)
-
-            nutrients.zip(percentages).forEach { (label, percentage) ->
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        modifier = Modifier
-                            .height(100.dp * percentage)
-                            .width(16.dp)
-                            .background(Colors.Primary.color40, shape = RoundedCornerShape(4.dp))
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(label, style = NutriCTypography.bodyXxs)
+                } else {
+                    for (meal in meals) {
+                        meal.food.foodMacroNutrient?.calories?.let { calories ->
+                            ActivityCard(
+                                currentCalories = calories.toInt(),
+                                date = formatIsoDate(meal.created_at),
+                                foodName = meal.food.name,
+                                imageResource = R.drawable.activity1,
+                                targetCalories = 2400
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }
     }
-
 }
 
 @Composable
-fun NutritionTable(foodMacroNutrient: FoodMacroNutrient) {
+fun NutritionTable(averageMacroTarget: MacroTargetAverage) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(Colors.Alomani.green, shape = RoundedCornerShape(12.dp))
     ) {
         TableHeader()
-        NutritionRow("Protein", foodMacroNutrient.protein.toString(), "10%")
-        NutritionRow("Karbohidrat", foodMacroNutrient.carbohydrates.toString(), "60%")
-        NutritionRow("Lemak", foodMacroNutrient.fat.toString(), "48%")
-        NutritionRow("Gula", foodMacroNutrient.sugar.toString(), "67%")
-        NutritionRow("Serat", foodMacroNutrient.fiber.toString(), "10%")
+        NutritionRow("Protein", averageMacroTarget.averageValues.protein.toString(), "${averageMacroTarget.averagePercentage.protein.toInt()}%")
+        NutritionRow("Karbohidrat", averageMacroTarget.averageValues.carbohydrates.toString(), "${averageMacroTarget.averagePercentage.carbohydrates.toInt()}%")
+        NutritionRow("Lemak", averageMacroTarget.averageValues.fat.toString(), "${averageMacroTarget.averagePercentage.fat.toInt()}%")
+        NutritionRow("Gula", averageMacroTarget.averageValues.sugar.toString(), "${averageMacroTarget.averagePercentage.sugar.toInt()}%")
+        NutritionRow("Kalori", averageMacroTarget.averageValues.calories.toString(), "${averageMacroTarget.averagePercentage.calories.toInt()}%")
+        NutritionRow("Serat", averageMacroTarget.averageValues.fiber.toString(), "${averageMacroTarget.averagePercentage.fiber.toInt()}%")
     }
 }
 

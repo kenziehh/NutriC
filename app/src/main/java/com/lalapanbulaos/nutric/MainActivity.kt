@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NutriCTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
+                Surface(color = Colors.Background.white) {
                     NavGraph()
 //                    ScaffoldLayout()
                 }

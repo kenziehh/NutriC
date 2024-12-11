@@ -2,6 +2,7 @@ package com.lalapanbulaos.nutric.features.scan_food.presentation.screen
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
@@ -35,6 +36,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.Snackbar
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -275,8 +279,25 @@ fun ScanResultBottomSheet(
     uiState: ScannerUiState,
     onMealSubmit: () -> Unit,
 ) {
+    val context = LocalContext.current
     val foodName = if (uiState.isScanSuccess) uiState.foodName else "Predicting..."
     val hasAllergy = uiState.hasAllergy
+    val showAllergyToast = remember { mutableStateOf(false) }
+
+    LaunchedEffect(hasAllergy) {
+        if (hasAllergy) {
+            showAllergyToast.value = true
+        }
+    }
+
+    if (showAllergyToast.value) {
+        Toast.makeText(
+            context,
+            "Alergi Terdeteksi : ${uiState.foodInfo?.allergens?.joinToString { it.name }}",
+            Toast.LENGTH_SHORT
+        ).show()
+        showAllergyToast.value = false
+    }
 
     val gridItems = remember(
         uiState.foodInfo?.foodMacroNutrient,
@@ -340,44 +361,29 @@ fun ScanResultBottomSheet(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     "Makanan",
                     style = NutriCTypography.subHeadingXs,
                     color = Colors.Neutral.color50
                 )
                 Spacer(modifier = Modifier.height(1.dp))
-                if (uiState.isScanSuccess) {
-                    Text(foodName ?: "", style = NutriCTypography.headingSm)
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(24.dp)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(
-                                        Color.Gray.copy(alpha = 0.3f),
-                                        Color.Gray.copy(alpha = 0.1f),
-                                        Color.Gray.copy(alpha = 0.3f)
-                                    ),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(200f, 0f)
-                                )
-                            )
-                    )
-                }
-
+                    Text(foodName ?: "", style = NutriCTypography.subHeadingLg)
             }
+
+            Spacer(modifier = Modifier.width(8.dp))
 
             if (hasAllergy) {
                 Box(
                     modifier = Modifier
                         .background(Colors.Danger.color10, RoundedCornerShape(8.dp))
                         .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .width(80.dp)
                 ) {
                     Text(
-                        "Alergi Dideteksi",
+                        "Alergi Terdeteksi",
                         fontSize = 12.sp,
                         color = Colors.Danger.color40,
                         fontWeight = FontWeight.SemiBold
@@ -423,7 +429,7 @@ fun ScanResultBottomSheet(
         Spacer(modifier = Modifier.height(28.dp))
 
         NutriCButton(
-            enabled = uiState.isPredictSuccess && !uiState.isMealSubmitting,
+            enabled = uiState.isPredictSuccess && !uiState.isMealSubmitting && !hasAllergy,
             onClick = {
                 uiState.foodInfo?.let {
                     onMealSubmit()

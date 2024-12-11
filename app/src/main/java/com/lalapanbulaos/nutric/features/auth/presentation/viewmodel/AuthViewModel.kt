@@ -40,23 +40,34 @@ class AuthViewModel @Inject constructor(
     val healthInfo: StateFlow<HealthInfo?> = _healthInfo.asStateFlow()
 
     init {
+        Log.d("AuthViewModel", "AuthViewModel initialized")
         checkAuthState()
     }
 
-    private fun checkAuthState() {
-        viewModelScope.launch {
-            val token = userPreferencesManager.accessToken.first()
+    fun checkAuthState() {
+        runBlocking {
+            val token = runBlocking { userPreferencesManager.accessToken.first() }
+            val onboardinCompleted = runBlocking { userPreferencesManager.onboardingCompleted.first() }
 
-            if (token != null) {
-                Log.d("AuthViewModel", "Token found: $token")
-                loadHealthInfo()
-                if (_healthInfo.value == null) {
-                    _authState.value = AuthState.RequiresHealthInfo
-                } else {
-                    _authState.value = AuthState.Authenticated
-                }
+            // Log fetched values
+            Log.d("AuthViewModel", "Token: $token, Onboarding Completed: $onboardinCompleted")
+
+            // Check onboarding status first
+            if (!onboardinCompleted) {
+                _authState.value = AuthState.NeedOnboarding
             } else {
-                _authState.value = AuthState.Unauthenticated
+                // Check if token exists and load health info
+                token?.let {
+                    Log.d("AuthViewModel", "Token found: $token")
+                    loadHealthInfo()
+                    _authState.value = if (_healthInfo.value == null) {
+                        AuthState.RequiresHealthInfo
+                    } else {
+                        AuthState.Authenticated
+                    }
+                } ?: run {
+                    _authState.value = AuthState.Unauthenticated
+                }
             }
         }
     }
@@ -68,6 +79,12 @@ class AuthViewModel @Inject constructor(
             Log.e("AuthViewModel", "Error loading health info", it)
         }
 
+    }
+
+    fun updateOnboardedState() {
+        viewModelScope.launch {
+            userPreferencesManager.setOnboardingCompleted(true)
+        }
     }
 
     fun updateUsername(username: String) {
@@ -125,6 +142,7 @@ class AuthViewModel @Inject constructor(
     suspend fun logout() {
         userPreferencesManager.clearUser()
         userPreferencesManager.clearAccessToken()
+        userPreferencesManager.setOnboardingCompleted(false)
         _authState.value = AuthState.Unauthenticated
         Log.d("AuthViewModel", "Logout successful")
     }
@@ -159,5 +177,6 @@ sealed class AuthState {
     object Unauthenticated : AuthState()
     object Authenticated : AuthState()
     object RequiresHealthInfo : AuthState()
+    object NeedOnboarding : AuthState()
     data class Error(val errorMessage: String) : AuthState()
 }

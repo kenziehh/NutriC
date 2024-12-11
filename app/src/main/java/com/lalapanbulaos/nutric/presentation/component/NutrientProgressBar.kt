@@ -54,68 +54,69 @@ fun NutrientProgressBar(
             contentDescription = label
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Column {
-            Text(
-                text = label,
-                color = Colors.Neutral.color50,
-                style = NutriCTypography.bodyXs
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
+        Box {
+            if (currentPlusScannedFood != null) {
                 Text(
-                    text = "$current/$goal g",
-                    style = NutriCTypography.subHeadingSm
+                    text = "$currentPlusScannedFood+",
+                    style = NutriCTypography.bodyXs,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Colors.Secondary.color50,
+                    modifier = Modifier.align(
+                        Alignment.TopEnd
+                    ).padding(top = 1.dp)
                 )
-
-                if (currentPlusScannedFood != null) {
-                    Text(
-                        text = "$currentPlusScannedFood+",
-                        style = NutriCTypography.bodySm,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Colors.Secondary.color50
-                    )
-                }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .weight(validProgress)
-                        .height(4.dp)
-                        .background(
-                            color = Colors.Secondary.color50,
-                            shape = RoundedCornerShape(100.dp)
-                        )
+            Column {
+                Text(
+                    text = label,
+                    color = Colors.Neutral.color50,
+                    style = NutriCTypography.bodyXs
                 )
-                Box(
-                    modifier = Modifier
-                        .weight(validAdditionalProgress)
-                        .height(4.dp)
-                        .background(
-                            color = Colors.Warning.color50,
-                            shape = RoundedCornerShape(100.dp)
-                        )
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "$current/$goal g",
+                    style = NutriCTypography.subHeadingXs
                 )
-                Box(
+
+
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .weight(remainingProgress)
-                        .height(4.dp)
-                        .background(
-                            Colors.Secondary.color20.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(100.dp)
-                        )
-                )
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(validProgress)
+                            .height(4.dp)
+                            .background(
+                                color = Colors.Secondary.color50,
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(validAdditionalProgress)
+                            .height(4.dp)
+                            .background(
+                                color = Colors.Warning.color50,
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(remainingProgress)
+                            .height(4.dp)
+                            .background(
+                                Colors.Secondary.color20.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(100.dp)
+                            )
+                    )
+                }
             }
         }
     }

@@ -35,7 +35,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
+import com.lalapanbulaos.nutric.core.navigation.AppRoutes
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthMode
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthState
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthViewModel
@@ -48,7 +50,8 @@ import com.lalapanbulaos.nutric.presentation.theme.CustomTypography
 fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
-    onRequiresHealthInfo: () -> Unit
+    onRequiresHealthInfo: () -> Unit,
+    navController: NavController
 ) {
     val inputState by viewModel.inputState.collectAsState()
     val authState = viewModel.authState.collectAsState().value
@@ -208,18 +211,17 @@ fun AuthScreen(
         }
 
         LaunchedEffect(authState) {
-            if (authState is AuthState.Authenticated) {
+            if  (authState is AuthState.NeedOnboarding) {
+                navController.navigate(AppRoutes.Onboarding.route)
+            } else if (authState is AuthState.Authenticated) {
                 onLoginSuccess()
             } else if (authState is AuthState.RequiresHealthInfo) {
                 onRequiresHealthInfo()
             }
-        }
 
-        when (authState) {
-            is AuthState.Error -> {
+            if (authState is AuthState.Error) {
                 Toast.makeText(context, authState.errorMessage, Toast.LENGTH_SHORT).show()
             }
-            else -> {}
         }
     }
 }

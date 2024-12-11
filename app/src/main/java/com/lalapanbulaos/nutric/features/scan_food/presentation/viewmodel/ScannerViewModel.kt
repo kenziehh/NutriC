@@ -124,7 +124,8 @@ class ScannerViewModel @Inject constructor(
                             _uiState.value = _uiState.value.copy(
                                 isPredicting = false,
                                 isPredictSuccess = true,
-                                foodInfo = foodInfo
+                                foodInfo = foodInfo,
+                                hasAllergy = foodInfo.allergens.isNotEmpty()
                             )
                             Log.d("ScannerViewModel", "Nutrition prediction completed")
                             Log.d("ScannerViewModel", "Food info: ${_uiState.value.foodInfo}")

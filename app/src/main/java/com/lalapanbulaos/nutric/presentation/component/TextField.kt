@@ -35,18 +35,17 @@ fun NutriCTextField(
     placeholderColor: Color = Color.Black,
     focusedLabelColor: Color = Colors.Primary.color40,
     isPassword: Boolean = false,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    trailingIcon: @Composable (() -> Unit)? = null
 ) {
     val isPasswordVisible = remember { mutableStateOf(false) }
 
-    // Determine the visual transformation (password or normal)
     val visualTransformation = if (isPassword && !isPasswordVisible.value) {
         PasswordVisualTransformation()
     } else {
         VisualTransformation.None
     }
 
-    // The icon to show/hide the password
     val eyeIcon =
         if (isPasswordVisible.value) painterResource(id = R.drawable.ic_eyeoff) else painterResource(
             id = R.drawable.ic_eye
@@ -77,6 +76,9 @@ fun NutriCTextField(
             focusedLabelColor = focusedLabelColor
         ),
         trailingIcon = {
+            if (trailingIcon != null) {
+                trailingIcon()
+            }
             // Eye icon to toggle password visibility
             if (isPassword) {
                 IconButton(onClick = {

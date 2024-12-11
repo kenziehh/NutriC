@@ -41,7 +41,8 @@ data class BottomNavItem(
 fun NutriCScaffold(navController: NavController, children: @Composable () -> Unit) {
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
-        bottomBar = { BottomNavbar(navController) }
+        bottomBar = { BottomNavbar(navController) },
+        containerColor = Colors.Background.white
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 24.dp, end = 24.dp).safeDrawingPadding().background(Colors.Background.white).verticalScroll(
             rememberScrollState()
@@ -78,6 +79,7 @@ fun BottomNavbar(navController: NavController) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shadowElevation = 8.dp,
+        color = Colors.Background.white
     ) {
         Row(
             modifier = Modifier

@@ -3,6 +3,7 @@ package com.lalapanbulaos.nutric.features.home.presentation.component
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,20 +54,26 @@ fun ActivityCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(painter = painterResource(imageResource), modifier = Modifier.size(60.dp), contentDescription = foodName)
-            Column {
-                Text(
-                    text = date,
-                    style = NutriCTypography.bodyXs,
-                    color = Colors.Neutral.color50
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = foodName,
-                    style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
-                    fontWeight = FontWeight.Bold
-                )
+            Row {
+                Image(painter = painterResource(imageResource), modifier = Modifier.size(60.dp), contentDescription = foodName)
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = date,
+                        style = NutriCTypography.bodyXs,
+                        color = Colors.Neutral.color50
+
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = foodName,
+                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.widthIn(max = 160.dp)
+                    )
+                }
             }
+
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(80.dp)

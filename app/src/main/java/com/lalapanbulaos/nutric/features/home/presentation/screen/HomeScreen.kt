@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -127,6 +128,7 @@ fun HomeScreen(
                 when {
                         uiState.isLoading -> {
                                 CircularProgressIndicator(
+                                        color = Colors.Primary.color50,
                                         modifier = Modifier.fillMaxWidth()
                                                 .wrapContentSize(Alignment.Center)
                                 )
@@ -138,15 +140,7 @@ fun HomeScreen(
                                 LazyColumn(modifier = Modifier.fillMaxWidth().height(400.dp)) {
                                         if (uiState.meals.isEmpty()) {
                                                 item {
-                                                        Text(
-                                                                text = "Belum ada aktivitas hari ini",
-                                                                style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Medium),
-                                                                color = Colors.Neutral.color40,
-                                                                modifier = Modifier
-                                                                        .fillMaxWidth()
-                                                                        .padding(16.dp),
-                                                                textAlign = TextAlign.Center
-                                                        )
+                                                        ActivityCard(currentCalories = 2500, date = "Today", foodName = "Lalapan bu laos tambah es teh", imageResource = R.drawable.activity1, targetCalories = 2400)
                                                 }
                                         } else {
                                                 items(uiState.meals) { meal ->

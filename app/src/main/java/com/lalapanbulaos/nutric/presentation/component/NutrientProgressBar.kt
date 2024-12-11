@@ -2,6 +2,7 @@ package com.lalapanbulaos.nutric.presentation.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -60,10 +61,27 @@ fun NutrientProgressBar(
                 style = NutriCTypography.bodyXs
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "$current/$goal g",
-                style = NutriCTypography.subHeadingSm
-            )
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "$current/$goal g",
+                    style = NutriCTypography.subHeadingSm
+                )
+
+                if (currentPlusScannedFood != null) {
+                    Text(
+                        text = "$currentPlusScannedFood+",
+                        style = NutriCTypography.bodySm,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Colors.Secondary.color50
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(4.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,

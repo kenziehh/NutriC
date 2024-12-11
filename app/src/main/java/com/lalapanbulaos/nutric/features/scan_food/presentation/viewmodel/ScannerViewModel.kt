@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lalapanbulaos.nutric.core.models.DailyTarget
 import com.lalapanbulaos.nutric.core.models.Food
+import com.lalapanbulaos.nutric.core.models.FoodMacroNutrient
 import com.lalapanbulaos.nutric.features.scan_food.usecase.CreateMealLogUseCase
+import com.lalapanbulaos.nutric.features.scan_food.usecase.GetDailyTotalMacros
 import com.lalapanbulaos.nutric.features.scan_food.usecase.GetUserDailyNutritionTarget
 import com.lalapanbulaos.nutric.features.scan_food.usecase.PredictFoodNameUseCase
 import com.lalapanbulaos.nutric.features.scan_food.usecase.PredictNutritionUseCase
@@ -22,7 +24,8 @@ class ScannerViewModel @Inject constructor(
     private val predictFoodNameUseCase: PredictFoodNameUseCase,
     private val predictNutritionUseCase: PredictNutritionUseCase,
     private val getUserDailyNutritionTarget: GetUserDailyNutritionTarget,
-    private val createMealLogUseCase: CreateMealLogUseCase
+    private val createMealLogUseCase: CreateMealLogUseCase,
+    private val getDailyTotalMacros: GetDailyTotalMacros
 ) : ViewModel()  {
 
     val _uiState = MutableStateFlow(ScannerUiState())
@@ -34,9 +37,14 @@ class ScannerViewModel @Inject constructor(
 
     fun onAddMealClicked() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                isMealSubmitting = true
+            )
             Log.d("ScannerViewModel", "onAddMealClicked called")
             createMealLogUseCase.execute(uiState.value.foodInfo?.id ?: "").onSuccess {
                 _uiState.value = _uiState.value.copy(
+                    isMealSubmitting = false,
+                    isMealSubmitted = true,
                     isScanSuccess = false,
                     isPredictSuccess = false,
                     foodName = null,
@@ -45,6 +53,7 @@ class ScannerViewModel @Inject constructor(
                 )
             }.onFailure {
                 _uiState.value = _uiState.value.copy(
+                    isMealSubmitting = false,
                     error = "Error occurred: ${it.message}"
                 )
             }
@@ -63,13 +72,14 @@ class ScannerViewModel @Inject constructor(
 
     fun onCaptureClicked(image: File) {
         Log.d("ScannerViewModel", "onCaptureClicked called")
-            _uiState.value = _uiState.value.copy(isScanning = true)
+            _uiState.value = _uiState.value.copy(isScanning = true, isScanSuccess = false)
 
             viewModelScope.launch {
                 Log.d("ScannerViewModel", "Starting scanning operation")
                 try {
                     predictFoodNameUseCase.execute(image).onSuccess {
                         _uiState.value = _uiState.value.copy(
+                            isPredictSuccess = false,
                             isScanning = false,
                             isScanSuccess = true,
                             foodName = it.foodName
@@ -92,6 +102,16 @@ class ScannerViewModel @Inject constructor(
                         getUserDailyNutritionTarget.execute().onSuccess {
                             _uiState.value = _uiState.value.copy(
                                 dailyTarget = it
+                            )
+                        }.onFailure {
+                            _uiState.value = _uiState.value.copy(
+                                error = "Error occurred: ${it.message}"
+                            )
+                        }
+
+                        getDailyTotalMacros.execute().onSuccess {
+                            _uiState.value = _uiState.value.copy(
+                                dailyTotalMacros = it
                             )
                         }.onFailure {
                             _uiState.value = _uiState.value.copy(
@@ -137,6 +157,7 @@ data class ScannerUiState(
     val isPermissionGranted: Boolean = false,
     val lensFacing: Int = CameraSelector.LENS_FACING_BACK,
     // User states
+    val dailyTotalMacros: FoodMacroNutrient? = null,
     val dailyTarget: DailyTarget? = null,
     // Scanning states
     val isScanning: Boolean = false,
@@ -150,5 +171,6 @@ data class ScannerUiState(
     val foodInfo: Food? = null,
     val error: String? = null,
     // Meal submit state
+    val isMealSubmitting: Boolean = false,
     val isMealSubmitted: Boolean = false
 )

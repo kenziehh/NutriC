@@ -66,7 +66,7 @@ fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
                                 .weight(1f)
                                 .padding(8.dp),
                             content = {
-                                Text(text = name, color = Color.White, textAlign = TextAlign.Center)
+                                Text(text = name, color = Color.White, textAlign = TextAlign.Center, style = NutriCTypography.bodySm)
                             }
                         )
                     } else {
@@ -76,14 +76,14 @@ fun StatisticScreen(viewModel: StatisticViewModel = hiltViewModel()) {
                                 .weight(1f)
                                 .padding(8.dp),
                             content = {
-                                Text(text = name, color = Color.Black, textAlign = TextAlign.Center)
+                                Text(text = name, color = Color.Black, textAlign = TextAlign.Center, style = NutriCTypography.bodySm)
                             }
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             BarChart(averageMacroTarget)
 
@@ -134,12 +134,12 @@ fun NutritionTable(averageMacroTarget: MacroTargetAverage) {
             .background(Colors.Alomani.green, shape = RoundedCornerShape(12.dp))
     ) {
         TableHeader()
-        NutritionRow("Protein", averageMacroTarget.averageValues.protein.toString(), "${averageMacroTarget.averagePercentage.protein.toInt()}%")
-        NutritionRow("Karbohidrat", averageMacroTarget.averageValues.carbohydrates.toString(), "${averageMacroTarget.averagePercentage.carbohydrates.toInt()}%")
-        NutritionRow("Lemak", averageMacroTarget.averageValues.fat.toString(), "${averageMacroTarget.averagePercentage.fat.toInt()}%")
-        NutritionRow("Gula", averageMacroTarget.averageValues.sugar.toString(), "${averageMacroTarget.averagePercentage.sugar.toInt()}%")
-        NutritionRow("Kalori", averageMacroTarget.averageValues.calories.toString(), "${averageMacroTarget.averagePercentage.calories.toInt()}%")
-        NutritionRow("Serat", averageMacroTarget.averageValues.fiber.toString(), "${averageMacroTarget.averagePercentage.fiber.toInt()}%")
+        NutritionRow("Protein", "${averageMacroTarget.averageValues.protein.toInt()} g", "${averageMacroTarget.averagePercentage.protein.toInt()}%")
+        NutritionRow("Karbohidrat", "${averageMacroTarget.averageValues.carbohydrates.toInt()} g", "${averageMacroTarget.averagePercentage.carbohydrates.toInt()}%")
+        NutritionRow("Lemak", "${averageMacroTarget.averageValues.fat.toInt()} g", "${averageMacroTarget.averagePercentage.fat.toInt()}%")
+        NutritionRow("Gula", "${averageMacroTarget.averageValues.sugar.toInt()} g", "${averageMacroTarget.averagePercentage.sugar.toInt()}%")
+        NutritionRow("Kalori", "${averageMacroTarget.averageValues.calories.toInt()} kcal", "${averageMacroTarget.averagePercentage.calories.toInt()}%")
+        NutritionRow("Serat", "${averageMacroTarget.averageValues.fiber.toInt()} g", "${averageMacroTarget.averagePercentage.fiber.toInt()}%")
     }
 }
 

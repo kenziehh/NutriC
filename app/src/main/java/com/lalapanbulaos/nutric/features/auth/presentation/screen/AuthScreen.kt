@@ -74,7 +74,7 @@ fun AuthScreen(
 
         Column(
             modifier = Modifier
-                .padding(24.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
         ) {
             Text(

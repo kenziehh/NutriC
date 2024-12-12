@@ -86,8 +86,9 @@ fun OnboardingScreen(
             text = "Lewati",
             style = NutriCTypography.subHeadingSm,
              modifier = Modifier
-                .padding(start = 330.dp, top = 16.dp)
                 .clickable { onSkip() }
+                 .padding(end = 16.dp)
+                 .align(Alignment.TopEnd)
         )
 
         Column(

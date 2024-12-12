@@ -12,18 +12,29 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateValue
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -58,9 +69,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -167,20 +181,60 @@ fun CameraPreview(
 
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .align(Alignment.BottomCenter).fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom
             ) {
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 Box(
-                    modifier = Modifier.width(250.dp)
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)  // 80% of screen width
+                        .fillMaxHeight(0.4f)  // Increase container height to see animation
+                        .background(Color.White.copy(alpha = 0.2f))
+                ) {
+                    // Animated line scan effect
+                    val transition = rememberInfiniteTransition(label = "")
+
+                    val containerHeight = LocalDensity.current.run {
+                        LocalConfiguration.current.screenHeightDp.dp.toPx() * 0.4f
+                    }
+
+                    val translateY by transition.animateValue(
+                        initialValue = 0.dp,
+                        targetValue = with(LocalDensity.current) { containerHeight.toDp() },
+                        typeConverter = Dp.VectorConverter,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(durationMillis = 3000, easing = EaseInOut),
+                            repeatMode = RepeatMode.Reverse  // Add this to bounce back and forth
+                        ),
+                        label = ""
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .offset(y = translateY)
+                            .height(4.dp)
+                            .background(Colors.Secondary.color40)
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Box(
+                    modifier = Modifier
+                        .width(250.dp)
                         .padding(bottom = 16.dp)
                 ) {
-                    Button(
-                        onClick = {
+                    Box(
+                        modifier = Modifier.align(Alignment.CenterStart).clip(
+                            CircleShape
+                        ).background(Colors.Secondary.color50).padding(8.dp).clickable {
                             scannerViewModel.onToggleCameraLensClicked()
-                        },
-                        shape = CircleShape,
-                        colors = ButtonDefaults.buttonColors(containerColor = Colors.Secondary.color50),
-                        modifier = Modifier.align(Alignment.CenterStart)
+                        }
+
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.camerarotate),
@@ -239,19 +293,20 @@ fun CameraPreview(
                 }
 
 
-                    AnimatedVisibility(
-                        visible = uiState.value.isScanSuccess,
-                        enter = slideInVertically(initialOffsetY = { it }),
-                        exit = slideOutVertically(targetOffsetY = { it })
-                    ) {
-                        ScanResultBottomSheet(
-                            modifier = Modifier,
-                            uiState = uiState.value,
-                            onMealSubmit = {
-                                scannerViewModel.onAddMealClicked()
-                            }
-                        )
-                    }
+                AnimatedVisibility(
+                    visible = uiState.value.isScanSuccess,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it })
+                ) {
+                    ScanResultBottomSheet(
+                        modifier = Modifier,
+                        uiState = uiState.value,
+                        onMealSubmit = {
+                            scannerViewModel.onAddMealClicked()
+                        }
+                    )
+                }
+
 
             }
         }
@@ -273,6 +328,7 @@ data class MacroItem(
     val dailyTotalMacro: Int,
     val dailyTarget: Int
 )
+
 @Composable
 fun ScanResultBottomSheet(
     modifier: Modifier,
@@ -370,7 +426,7 @@ fun ScanResultBottomSheet(
                     color = Colors.Neutral.color50
                 )
                 Spacer(modifier = Modifier.height(1.dp))
-                    Text(foodName ?: "", style = NutriCTypography.subHeadingLg)
+                Text(foodName ?: "", style = NutriCTypography.subHeadingLg)
             }
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -429,7 +485,7 @@ fun ScanResultBottomSheet(
         Spacer(modifier = Modifier.height(28.dp))
 
         NutriCButton(
-            enabled = uiState.isPredictSuccess && !uiState.isMealSubmitting && !hasAllergy,
+            enabled = uiState.isPredictSuccess && !uiState.isMealSubmitting,
             onClick = {
                 uiState.foodInfo?.let {
                     onMealSubmit()

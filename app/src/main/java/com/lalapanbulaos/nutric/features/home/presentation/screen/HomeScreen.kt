@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.lalapanbulaos.nutric.R
+import com.lalapanbulaos.nutric.core.navigation.AppRoutes
 import com.lalapanbulaos.nutric.features.home.presentation.component.ActivityCard
 import com.lalapanbulaos.nutric.features.home.presentation.component.HalfCircularProgressBar
 import com.lalapanbulaos.nutric.features.home.presentation.viewmodel.HomeViewModel
@@ -140,7 +141,9 @@ fun HomeScreen(
 
                 Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text("Aktivitas", style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
-                        Text("Lihat Semua", style = NutriCTypography.subHeadingXs, color = Colors.Secondary.color50)
+                        Text("Lihat Semua", style = NutriCTypography.subHeadingXs, color = Colors.Secondary.color50, modifier = Modifier.clickable {
+                                navController.navigate(AppRoutes.Statistics.route)
+                        })
                 }
                 Spacer(Modifier.height(16.dp))
 

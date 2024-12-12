@@ -12,5 +12,7 @@ sealed class AppRoutes(val route: String) {
     object Statistics : AppRoutes("statistics")
     object HealthInfo : AppRoutes("health-info")
     object Notification : AppRoutes("notification")
-    object ArticleDetail : AppRoutes("article-detail")
+    object ArticleDetail : AppRoutes("article-detail/{articleId}") {
+        fun createRoute(articleId: String): String = "article-detail/$articleId"
+    }
 }

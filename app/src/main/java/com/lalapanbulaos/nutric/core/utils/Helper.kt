@@ -35,3 +35,29 @@ fun formatIsoDate(isoDateString: String?): String {
     } ?: "Unknown Date"
 }
 
+fun formatDateArticle1(dateString: String?): String {
+    return dateString?.let {
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("EEEE, d MMMM yyyy", Locale("id", "ID")) // Locale for Indonesian format
+            val date = inputFormat.parse(it)
+            date?.let { parsedDate -> outputFormat.format(parsedDate) } ?: "Tanggal Tidak Diketahui"
+        } catch (e: Exception) {
+            "Tanggal Tidak Valid"
+        }
+    } ?: "Tanggal Tidak Diketahui"
+}
+
+fun formatDateArticle2(dateString: String?): String {
+    return dateString?.let {
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("EEE, MM/dd/yyyy • HH:mm", Locale("id", "ID")) // Added time
+            val date = inputFormat.parse(it)
+            date?.let { parsedDate -> outputFormat.format(parsedDate) } ?: "Unknown Date"
+        } catch (e: Exception) {
+            "Invalid Date"
+        }
+    } ?: "Unknown Date"
+}
+

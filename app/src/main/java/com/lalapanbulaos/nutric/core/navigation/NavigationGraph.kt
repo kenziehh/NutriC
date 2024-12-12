@@ -18,9 +18,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.lalapanbulaos.nutric.features.article.presentation.screen.ArticleDetailScreen
 import com.lalapanbulaos.nutric.features.article.presentation.screen.ArticleScreen
 import com.lalapanbulaos.nutric.features.auth.presentation.screen.AuthScreen
 import com.lalapanbulaos.nutric.features.auth.presentation.viewmodel.AuthState
@@ -90,6 +93,7 @@ fun NavGraph(
                     popUpTo(0) { inclusive = true }
                 }
             }
+
             else -> {
                 navController.navigate(AppRoutes.Splash.route) {
                     popUpTo(0) { inclusive = true }
@@ -197,7 +201,9 @@ fun NavGraph(
             enterTransition = { EnterTransition.None },
             exitTransition = { ExitTransition.None }) {
             Box {
-                ArticleScreen()
+                ArticleScreen(
+                    navController = navController
+                )
                 Box(
                     modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
@@ -206,8 +212,15 @@ fun NavGraph(
             }
         }
 
-        composable(AppRoutes.ArticleDetail.route) {
-
+        composable(
+            route = AppRoutes.ArticleDetail.route,
+            arguments = listOf(navArgument("articleId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val articleId = backStackEntry.arguments?.getString("articleId")
+            ArticleDetailScreen(
+                articleId = articleId,
+                onGoBack = { navController.popBackStack() }
+            )
         }
 
         composable(AppRoutes.Profile.route,

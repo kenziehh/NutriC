@@ -97,7 +97,7 @@ fun HealthInfoInputStepContent(
             value = state.inputState.age,
             label = "Age",
             onValueChange = { onEvent(HealthInfoEvent.OnAgeChanged(it)) },
-            keyboardType = KeyboardType.Number
+            keyboardType = KeyboardType.Number,
         )
 
         "height" -> NutriCTextField(

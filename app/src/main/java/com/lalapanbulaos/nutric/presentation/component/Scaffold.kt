@@ -44,7 +44,7 @@ fun NutriCScaffold(navController: NavController, children: @Composable () -> Uni
         bottomBar = { BottomNavbar(navController) },
         containerColor = Colors.Background.white
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 24.dp, end = 24.dp).safeDrawingPadding().background(Colors.Background.white).verticalScroll(
+        Box(modifier = Modifier.padding(paddingValues).padding(top = 40.dp, start = 16.dp, end = 16.dp).safeDrawingPadding().background(Colors.Background.white).verticalScroll(
             rememberScrollState()
         )
         ) {

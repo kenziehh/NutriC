@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -45,29 +46,30 @@ fun ActivityCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = Colors.Neutral.color00, shape = RoundedCornerShape(12.dp)),
-
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 24.dp, vertical = 6.5.dp)
+                .padding(horizontal = 24.dp, vertical = 8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row {
-                Image(painter = painterResource(imageResource), modifier = Modifier.size(60.dp), contentDescription = foodName)
-                Spacer(modifier = Modifier.width(8.dp))
-                Column {
+                Image(painter = painterResource(imageResource), modifier = Modifier.size(40.dp), contentDescription = foodName)
+                Spacer(modifier = Modifier.width(12.dp))
+                Column (
+                    modifier = Modifier.fillMaxHeight(1f)
+                ) {
                     Text(
                         text = date,
                         style = NutriCTypography.bodyXs,
                         color = Colors.Neutral.color50
 
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = foodName,
-                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp),
+                        style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp),
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.widthIn(max = 160.dp)
                     )
@@ -76,14 +78,15 @@ fun ActivityCard(
 
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(80.dp)
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 CircularProgressBar(
+                    modifier = Modifier.size(50.dp),
                     current = currentCalories,
                     target = targetCalories,
-                    strokeWidth = 8.dp
+                    strokeWidth = 5.dp
                 )
-                Column(verticalArrangement = Arrangement.Center) {
+                Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "$currentCalories",
                         style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold),

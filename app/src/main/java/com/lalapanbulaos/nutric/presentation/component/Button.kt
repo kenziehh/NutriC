@@ -33,7 +33,7 @@ fun NutriCButton(
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Colors.Primary.color40,
             contentColor = Color.White,
-            disabledBackgroundColor = Colors.Primary.color10,
+            disabledBackgroundColor = Colors.Primary.color20,
             disabledContentColor = Color.White
         ),
         shape = DefaultButtonShape,

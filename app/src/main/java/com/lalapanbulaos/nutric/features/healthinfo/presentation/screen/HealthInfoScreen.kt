@@ -54,7 +54,7 @@ private fun HealthInfoContent(
     modifier = Modifier
       .fillMaxSize()
       .safeDrawingPadding()
-      .padding(20.dp)
+      .padding(vertical = 20.dp, horizontal = 16.dp)
   ) {
     // Progress Header
     Row(

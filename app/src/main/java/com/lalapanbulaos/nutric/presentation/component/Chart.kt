@@ -44,7 +44,7 @@ fun BarChart(macroTargetAverage: MacroTargetAverage) {
             horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val nutrients = listOf("Protein", "Karbo", "Lemak", "Gula", "Calories", "Serat")
+            val nutrients = listOf("Protein", "Karbo", "Lemak", "Gula", "Kalori", "Serat")
             val percentages = listOf(100f, 80f, 60f, 40f, 20f, 10f)
             val listMacroTargetPercentage = listOf(
                 macroTargetAverage.averagePercentage.protein,

@@ -92,6 +92,7 @@ fun NutriCTextField(
                 }
             }
         },
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType)
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
+        maxLines = 1
     )
 }
